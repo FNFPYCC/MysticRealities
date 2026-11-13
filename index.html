@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MysticRealities</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">Mystic<span>Realities</span></div>
+
+        <nav>
+            <a href="#home">Главная</a>
+            <a href="#games">Игры</a>
+            <a href="#about">О проекте</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <p class="subtitle">WELCOME TO ANOTHER WORLD</p>
+                <h1>MysticRealities</h1>
+                <p class="description">
+                    Открой новые миры, исследуй реальности
+                    и найди своё приключение.
+                </p>
+                <a href="#games" class="main-button">
+                    Исследовать игры
+                </a>
+            </div>
+        </section>
+
+        <section class="games" id="games">
+            <h2>Наши игры</h2>
+            <p class="section-description">
+                Выбери свою реальность
+            </p>
+
+            <div class="game-grid">
+
+                <article class="game-card">
+                    <div class="game-image">
+                        <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=900"
+                             alt="MysticGuessr">
+                    </div>
+
+                    <div class="game-info">
+                        <span class="game-tag">MINECRAFT</span>
+                        <h3>MysticGuessr</h3>
+                        <p>
+                            Исследуй Minecraft-миры в формате 360°
+                            и угадывай своё местоположение.
+                        </p>
+
+                        <button id="playButton">
+                            Играть
+                        </button>
+                    </div>
+                </article>
+
+                <article class="game-card coming-soon">
+                    <div class="game-image second-image">
+                        <span>?</span>
+                    </div>
+
+                    <div class="game-info">
+                        <span class="game-tag">COMING SOON</span>
+                        <h3>Новая реальность</h3>
+                        <p>
+                            Новые приключения появятся здесь
+                            в будущем.
+                        </p>
+
+                        <button disabled>
+                            Скоро
+                        </button>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <section class="about" id="about">
+            <h2>О MysticRealities</h2>
+            <p>
+                MysticRealities — платформа, объединяющая
+                необычные игровые проекты и приключения.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        © 2026 MysticRealities. All rights reserved.
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
