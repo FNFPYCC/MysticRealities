@@ -1,108 +1,72 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>MysticGuessr | MysticRealities</title>
-
     <link rel="stylesheet" href="game.css">
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
 <header class="topbar">
-    <a href="../../index.html" class="logo">
-        Mystic<span>Realities</span>
-    </a>
-
+    <a href="../../index.html" class="logo">Mystic<span>Realities</span></a>
     <div class="game-name">MYSTICGUESSR</div>
-
-    <div class="round-info" id="roundInfo">
-        Раунд 1 / 5
+    <div class="top-chips">
+        <div class="chip" id="roundInfo">Раунд 1 / 5</div>
+        <div class="chip chip-accent" id="scoreInfo">Очки: 0</div>
     </div>
 </header>
 
 <main class="game-layout">
-
     <section class="view-section">
-
-        <div id="panorama">
-            <div id="loading">Загрузка панорамы...</div>
-        </div>
-
-        <div class="view-help">
-            Перетаскивай мышью, чтобы осматриваться
-        </div>
-
-        <div class="timer" id="timer">
-            03:00
-        </div>
-
-        <div class="view-controls">
-            <button id="startButton">
-                Начать раунд
-            </button>
-        </div>
-
+        <div id="panorama"><div id="loading" class="chip">Загрузка панорамы...</div></div>
+        <div class="view-help">Тяни мышью — осматриваться • колёсико — приближение</div>
+        <div class="timer" id="timer">03:00</div>
     </section>
-
 </main>
 
-<!-- ======================================
-     МИНИ-КАРТА
-====================================== -->
-
-<div class="map-widget" id="mapWidget">
-
-    <div class="map-header">
-
-        <div>
-            <h2>Карта мира</h2>
-            <span>PIXEL WORLD</span>
+<!-- Стартовый экран -->
+<div class="overlay" id="startScreen">
+    <div class="card">
+        <div class="card-tag">MYSTICREALITIES</div>
+        <h1>MysticGuessr</h1>
+        <p>Осмотрись вокруг в 360° и поставь метку на карте там, где, по-твоему, ты находишься.
+           Чем ближе метка — тем больше очков.</p>
+        <div class="card-stats">
+            <div><b id="roundsCount">5</b><span>раундов</span></div>
+            <div><b>3:00</b><span>на раунд</span></div>
+            <div><b>5000</b><span>макс. за раунд</span></div>
         </div>
+        <button id="startButton" class="primary big">Начать игру</button>
+    </div>
+</div>
 
-        <button id="expandMapButton" title="Развернуть карту">
-            ⛶
-        </button>
-
+<!-- Карта -->
+<div class="map-widget" id="mapWidget">
+    <div class="map-header">
+        <div class="map-title">Карта мира <small>1 пиксель = 1 блок</small></div>
+        <button id="expandMapButton" class="icon-btn" title="Развернуть карту">⛶</button>
     </div>
 
     <div class="map-canvas-wrapper">
-        <canvas id="worldMap" width="512" height="512"></canvas>
+        <canvas id="worldMap" width="2208" height="2208"></canvas>
+        <div class="zoom-controls">
+            <button id="zoomInButton" class="icon-btn" title="Приблизить">+</button>
+            <button id="zoomOutButton" class="icon-btn" title="Отдалить">−</button>
+            <button id="resetMapButton" class="icon-btn" title="Сбросить вид">⌂</button>
+        </div>
     </div>
 
-    <div class="map-help">
-        Колёсико — масштаб • ЛКМ — перемещение
-    </div>
+    <div class="map-help">Колёсико — масштаб • перетаскивание — двигать • клик — поставить метку</div>
+    <div class="coordinates" id="coordinates">Метка не установлена</div>
 
-    <div class="coordinates" id="coordinates">
-        Метка не установлена
-    </div>
-
-    <div class="map-buttons">
-
-        <button id="resetMapButton">
-            Сбросить
-        </button>
-
-        <button id="guessButton" disabled>
-            Подтвердить место
-        </button>
-
-    </div>
-
-    <button id="closeMapButton">
-        Закрыть карту
-    </button>
-
+    <button id="guessButton" class="primary" disabled>Подтвердить место</button>
     <div id="result"></div>
-
+    <button id="nextButton" class="primary" hidden>Следующий раунд</button>
+    <button id="closeMapButton" class="ghost">Свернуть карту</button>
 </div>
 
 <script src="game.js"></script>
-
 </body>
 </html>
