@@ -10,16 +10,25 @@ body {
     color: white;
     font-family: Arial, sans-serif;
     min-height: 100vh;
+    overflow-x: hidden;
 }
+
+/* ======================================
+   ВЕРХНЯЯ ПАНЕЛЬ
+====================================== */
 
 .topbar {
     height: 70px;
     background: #151020;
     border-bottom: 1px solid #39294e;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     padding: 0 4%;
+    position: relative;
+    z-index: 5;
 }
 
 .logo {
@@ -43,17 +52,23 @@ body {
     color: #c8b5e9;
 }
 
+/* ======================================
+   ИГРОВОЕ ПОЛЕ
+====================================== */
+
 .game-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 420px;
-    gap: 20px;
+    display: block;
     padding: 20px;
     min-height: calc(100vh - 70px);
 }
 
 .view-section {
     position: relative;
-    min-height: 600px;
+
+    width: 100%;
+    height: calc(100vh - 110px);
+    min-height: 500px;
+
     background: #171323;
     border: 1px solid #342647;
     border-radius: 12px;
@@ -63,10 +78,15 @@ body {
 #panorama {
     width: 100%;
     height: 100%;
-    min-height: 600px;
+
     position: absolute;
     inset: 0;
-    background: linear-gradient(#536b88, #293b35 65%, #18271e);
+
+    background: linear-gradient(
+        #536b88,
+        #293b35 65%,
+        #18271e
+    );
 }
 
 #panorama canvas {
@@ -78,10 +98,13 @@ body {
 #loading {
     position: absolute;
     z-index: 2;
+
     top: 15px;
     left: 15px;
+
     color: white;
     background: #171323aa;
+
     padding: 10px;
     border-radius: 6px;
 }
@@ -90,10 +113,13 @@ body {
     position: absolute;
     bottom: 18px;
     left: 50%;
+
     transform: translateX(-50%);
+
     background: #171323cc;
     padding: 12px 18px;
     border-radius: 8px;
+
     color: #ddd0f5;
     pointer-events: none;
     white-space: nowrap;
@@ -103,10 +129,13 @@ body {
     position: absolute;
     top: 20px;
     right: 20px;
+
     background: #171323e8;
     border: 1px solid #a77aff;
     border-radius: 8px;
+
     padding: 12px 20px;
+
     font-size: 25px;
     font-weight: bold;
     font-variant-numeric: tabular-nums;
@@ -118,66 +147,22 @@ body {
     left: 20px;
 }
 
-.map-section {
-    background: #171323;
-    border: 1px solid #39294e;
-    border-radius: 12px;
-    padding: 20px;
-    height: fit-content;
-}
-
-.map-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.map-header h2 {
-    font-size: 20px;
-}
-
-.map-header span {
-    color: #ad80ff;
-    font-size: 11px;
-    letter-spacing: 2px;
-}
-
-#worldMap {
-    width: 100%;
-    height: auto;
-    display: block;
-    border: 3px solid #413454;
-    border-radius: 5px;
-    image-rendering: pixelated;
-    cursor: crosshair;
-    touch-action: none;
-}
-
-.map-help {
-    color: #a99bbd;
-    font-size: 13px;
-    margin: 14px 0;
-}
-
-.coordinates {
-    background: #251c33;
-    padding: 12px;
-    border-radius: 6px;
-    color: #d3baff;
-    font-size: 13px;
-    margin-bottom: 15px;
-}
+/* ======================================
+   КНОПКИ
+====================================== */
 
 button {
     background: #8754d1;
     color: white;
+
     border: none;
     padding: 13px 18px;
     border-radius: 7px;
+
     font-weight: bold;
     cursor: pointer;
-    transition: 0.2s;
+
+    transition: background 0.2s;
 }
 
 button:hover:not(:disabled) {
@@ -190,42 +175,217 @@ button:disabled {
     cursor: not-allowed;
 }
 
+/* ======================================
+   МИНИ-КАРТА
+====================================== */
+
+.map-widget {
+    position: fixed;
+    z-index: 20;
+
+    right: 20px;
+    bottom: 20px;
+
+    width: 260px;
+    padding: 14px;
+
+    background: #171323ee;
+    border: 1px solid #7049a0;
+    border-radius: 12px;
+
+    box-shadow: 0 5px 30px #0009;
+
+    transition:
+        width 0.2s,
+        height 0.2s;
+}
+
+.map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 10px;
+}
+
+.map-header h2 {
+    font-size: 17px;
+}
+
+.map-header span {
+    color: #ad80ff;
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+#expandMapButton {
+    padding: 8px 12px;
+    font-size: 18px;
+}
+
+.map-canvas-wrapper {
+    width: 100%;
+    overflow: hidden;
+
+    border: 2px solid #413454;
+    border-radius: 5px;
+}
+
+#worldMap {
+    width: 100%;
+    height: auto;
+
+    display: block;
+
+    image-rendering: pixelated;
+
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+#worldMap:active {
+    cursor: grabbing;
+}
+
+.map-help {
+    color: #a99bbd;
+    font-size: 11px;
+
+    margin: 10px 0;
+}
+
+.coordinates {
+    background: #251c33;
+
+    padding: 10px;
+    border-radius: 6px;
+
+    color: #d3baff;
+    font-size: 12px;
+
+    margin-bottom: 10px;
+}
+
+.map-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 #guessButton {
     width: 100%;
 }
 
-#result {
-    margin-top: 15px;
-    line-height: 1.7;
-    color: #d5c2f6;
+#resetMapButton {
+    background: #443454;
 }
 
-@media (max-width: 900px) {
-    .game-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .view-section {
-        min-height: 420px;
-    }
-
-    #panorama {
-        min-height: 420px;
-    }
-
-    .map-section {
-        max-width: 600px;
-        width: 100%;
-        margin: auto;
-    }
+#resetMapButton:hover {
+    background: #60457c;
 }
 
-@media (max-width: 500px) {
+#closeMapButton {
+    display: none;
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* ======================================
+   РАЗВЁРНУТАЯ КАРТА
+====================================== */
+
+.map-widget.expanded {
+    position: fixed;
+
+    inset: 3%;
+
+    width: auto;
+    height: auto;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 20px;
+
+    background: #100c1a;
+    border: 2px solid #8754d1;
+}
+
+.map-widget.expanded .map-header {
+    flex-shrink: 0;
+}
+
+.map-widget.expanded .map-canvas-wrapper {
+    flex: 1;
+
+    min-height: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: none;
+}
+
+.map-widget.expanded #worldMap {
+    width: auto;
+    height: 100%;
+
+    max-width: 100%;
+    max-height: 100%;
+
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+}
+
+.map-widget.expanded .map-help {
+    font-size: 13px;
+}
+
+.map-widget.expanded .map-buttons {
+    flex-shrink: 0;
+}
+
+.map-widget.expanded #closeMapButton {
+    display: block;
+    flex-shrink: 0;
+}
+
+/* ======================================
+   АДАПТАЦИЯ
+====================================== */
+
+@media (max-width: 600px) {
+
     .game-name {
         display: none;
     }
 
     .game-layout {
         padding: 10px;
+    }
+
+    .view-section {
+        height: calc(100vh - 90px);
+        min-height: 420px;
+    }
+
+    .map-widget {
+        width: 190px;
+
+        right: 10px;
+        bottom: 10px;
+    }
+
+    .map-widget.expanded {
+        inset: 2%;
+        width: auto;
+        height: auto;
+    }
+
+    .timer {
+        font-size: 20px;
+        padding: 10px 14px;
     }
 }

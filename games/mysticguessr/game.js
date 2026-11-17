@@ -8,6 +8,11 @@
 const mapCanvas = document.getElementById("worldMap");
 const ctx = mapCanvas.getContext("2d");
 
+const mapWidget = document.getElementById("mapWidget");
+const expandMapButton = document.getElementById("expandMapButton");
+const closeMapButton = document.getElementById("closeMapButton");
+const resetMapButton = document.getElementById("resetMapButton");
+
 const timerElement = document.getElementById("timer");
 const coordinatesElement = document.getElementById("coordinates");
 const resultElement = document.getElementById("result");
@@ -26,14 +31,25 @@ const ROUNDS = 5;
 const ROUND_TIME = 180;
 
 // ==========================================
-// СПИСОК ЛОКАЦИЙ
+// НАСТРОЙКИ КАРТЫ
 // ==========================================
 
-// Каждая глава имеет:
-// name   — название главы
-// folder — путь к папке с шестью текстурами
-// x      — координата X в Minecraft
-// z      — координата Z в Minecraft
+let mapScale = 1;
+let mapOffsetX = 0;
+let mapOffsetY = 0;
+
+let mapDragging = false;
+let mapDragMoved = false;
+
+let mapLastX = 0;
+let mapLastY = 0;
+
+let mapPointerStartX = 0;
+let mapPointerStartY = 0;
+
+// ==========================================
+// СПИСОК ЛОКАЦИЙ
+// ==========================================
 
 const LOCATIONS = [
     {
@@ -90,8 +106,6 @@ function randomLocation() {
         throw new Error("Список LOCATIONS пуст!");
     }
 
-    // Когда все локации использованы,
-    // создаём новый перемешанный набор.
     if (locationPool.length === 0) {
         locationPool = [...LOCATIONS];
 
@@ -135,12 +149,10 @@ function generateMap() {
         for (let x = 0; x < tiles; x++) {
             let colorIndex = Math.floor(random() * colors.length);
 
-            // Внешняя область воды
             if (x < 5 || x > 59 || y < 5 || y > 59) {
                 colorIndex = 4;
             }
 
-            // Центральная область суши
             if (x > 12 && x < 50 && y > 12 && y < 50) {
                 if (random() > 0.65) {
                     colorIndex = 0;
@@ -191,6 +203,7 @@ function mapToWorld(x, y) {
         x: Math.round(
             (x / mapCanvas.width - 0.5) * WORLD_SIZE
         ),
+
         z: Math.round(
             (y / mapCanvas.height - 0.5) * WORLD_SIZE
         )
@@ -221,7 +234,30 @@ function drawMarker(position, color, radius = 10) {
     ctx.stroke();
 }
 
+// ==========================================
+// ОТРИСОВКА КАРТЫ
+// ==========================================
+
 function drawMap() {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    ctx.clearRect(
+        0,
+        0,
+        mapCanvas.width,
+        mapCanvas.height
+    );
+
+    // Применяем масштаб и перемещение
+    ctx.setTransform(
+        mapScale,
+        0,
+        0,
+        mapScale,
+        mapOffsetX,
+        mapOffsetY
+    );
+
     generateMap();
 
     // Метка игрока
@@ -249,30 +285,186 @@ function drawMap() {
             ctx.setLineDash([]);
         }
     }
+
+    // Сбрасываем трансформацию
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
 }
 
 // ==========================================
-// ВЫБОР МЕТКИ НА КАРТЕ
+// УПРАВЛЕНИЕ КАРТОЙ
 // ==========================================
 
-mapCanvas.addEventListener("click", (event) => {
-    if (!gameStarted || roundFinished) return;
-
+// Получение координат на карте с учётом масштаба
+function getMapPosition(event) {
     const rect = mapCanvas.getBoundingClientRect();
 
-    const x =
+    const screenX =
         (event.clientX - rect.left) /
         rect.width * mapCanvas.width;
 
-    const y =
+    const screenY =
         (event.clientY - rect.top) /
         rect.height * mapCanvas.height;
 
-    guess = mapToWorld(x, y);
+    return {
+        x: (screenX - mapOffsetX) / mapScale,
+        y: (screenY - mapOffsetY) / mapScale
+    };
+}
 
-    coordinatesElement.textContent = "Метка установлена!";
+// Начало перемещения карты
+mapCanvas.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
+
+    mapDragging = true;
+    mapDragMoved = false;
+
+    mapLastX = event.clientX;
+    mapLastY = event.clientY;
+
+    mapPointerStartX = event.clientX;
+    mapPointerStartY = event.clientY;
+
+    mapCanvas.setPointerCapture(event.pointerId);
+});
+
+// Перемещение карты
+mapCanvas.addEventListener("pointermove", (event) => {
+    if (!mapDragging) return;
+
+    const dx = event.clientX - mapLastX;
+    const dy = event.clientY - mapLastY;
+
+    if (
+        Math.abs(event.clientX - mapPointerStartX) > 4 ||
+        Math.abs(event.clientY - mapPointerStartY) > 4
+    ) {
+        mapDragMoved = true;
+    }
+
+    if (mapDragMoved) {
+        const rect = mapCanvas.getBoundingClientRect();
+
+        mapOffsetX +=
+            dx / rect.width * mapCanvas.width;
+
+        mapOffsetY +=
+            dy / rect.height * mapCanvas.height;
+
+        drawMap();
+    }
+
+    mapLastX = event.clientX;
+    mapLastY = event.clientY;
+});
+
+// Завершение перемещения или установка метки
+function stopMapDragging(event) {
+    if (!mapDragging) return;
+
+    mapDragging = false;
+
+    // Если двигали карту, не ставим метку
+    if (mapDragMoved) return;
+
+    if (!gameStarted || roundFinished) return;
+
+    const position = getMapPosition(event);
+
+    if (
+        position.x < 0 ||
+        position.x > mapCanvas.width ||
+        position.y < 0 ||
+        position.y > mapCanvas.height
+    ) {
+        return;
+    }
+
+    guess = mapToWorld(
+        position.x,
+        position.y
+    );
+
+    coordinatesElement.textContent =
+        "Метка установлена!";
 
     guessButton.disabled = false;
+
+    drawMap();
+}
+
+mapCanvas.addEventListener("pointerup", stopMapDragging);
+
+mapCanvas.addEventListener("pointercancel", () => {
+    mapDragging = false;
+});
+
+// ==========================================
+// МАСШТАБИРОВАНИЕ КОЛЁСИКОМ
+// ==========================================
+
+mapCanvas.addEventListener("wheel", (event) => {
+    event.preventDefault();
+
+    const rect = mapCanvas.getBoundingClientRect();
+
+    const mouseX =
+        (event.clientX - rect.left) /
+        rect.width * mapCanvas.width;
+
+    const mouseY =
+        (event.clientY - rect.top) /
+        rect.height * mapCanvas.height;
+
+    const oldScale = mapScale;
+
+    // Вверх — увеличить, вниз — уменьшить
+    const zoomFactor =
+        event.deltaY < 0 ? 1.15 : 1 / 1.15;
+
+    mapScale = Math.max(
+        1,
+        Math.min(8, mapScale * zoomFactor)
+    );
+
+    // Масштабирование относительно курсора
+    const ratio = mapScale / oldScale;
+
+    mapOffsetX =
+        mouseX - (mouseX - mapOffsetX) * ratio;
+
+    mapOffsetY =
+        mouseY - (mouseY - mapOffsetY) * ratio;
+
+    drawMap();
+
+}, { passive: false });
+
+// ==========================================
+// СБРОС КАРТЫ
+// ==========================================
+
+resetMapButton.addEventListener("click", () => {
+    mapScale = 1;
+
+    mapOffsetX = 0;
+    mapOffsetY = 0;
+
+    drawMap();
+});
+
+// ==========================================
+// ОТКРЫТИЕ И ЗАКРЫТИЕ КАРТЫ
+// ==========================================
+
+expandMapButton.addEventListener("click", () => {
+    mapWidget.classList.add("expanded");
+
+    drawMap();
+});
+
+closeMapButton.addEventListener("click", () => {
+    mapWidget.classList.remove("expanded");
 
     drawMap();
 });
@@ -305,18 +497,16 @@ function updateTimer() {
 function loadPanorama(location) {
     if (!panoramaScene) return;
 
-    // Номер запроса нужен, чтобы старое изображение
-    // не заменило панораму нового раунда.
     const requestId = ++panoramaRequestId;
 
     const basePath =
         `../../assets/panoramas/${location.folder}/`;
 
     const imagePaths = [
-        basePath + "panorama_0.png",
         basePath + "panorama_1.png",
         basePath + "panorama_2.png",
         basePath + "panorama_3.png",
+        basePath + "panorama_0.png",
         basePath + "panorama_4.png",
         basePath + "panorama_5.png"
     ];
@@ -369,6 +559,7 @@ function startRound() {
     if (LOCATIONS.length === 0) {
         resultElement.textContent =
             "Сначала добавь хотя бы одну локацию в LOCATIONS.";
+
         return;
     }
 
@@ -395,13 +586,21 @@ function startRound() {
 
     timerElement.textContent = "03:00";
 
-    loadPanorama(target);
+    // Сбрасываем положение карты между раундами
+    mapScale = 1;
+    mapOffsetX = 0;
+    mapOffsetY = 0;
 
     drawMap();
 
+    loadPanorama(target);
+
     clearInterval(timerInterval);
 
-    timerInterval = setInterval(updateTimer, 1000);
+    timerInterval = setInterval(
+        updateTimer,
+        1000
+    );
 }
 
 // ==========================================
@@ -433,12 +632,18 @@ function finishRound() {
     let distance = null;
 
     if (guess) {
-        distance = calculateDistance(target, guess);
+        distance = calculateDistance(
+            target,
+            guess
+        );
 
         gained = Math.max(
             0,
             Math.round(
-                5000 * Math.max(0, 1 - distance / 28284)
+                5000 * Math.max(
+                    0,
+                    1 - distance / 28284
+                )
             )
         );
     }
@@ -465,7 +670,9 @@ function finishRound() {
     `;
 
     coordinatesElement.textContent =
-        guess ? "Метка проверена" : "Метка не установлена";
+        guess
+            ? "Метка проверена"
+            : "Метка не установлена";
 
     guessButton.disabled = true;
 
@@ -479,7 +686,9 @@ function finishRound() {
 
         resultElement.innerHTML += `
             <h2>Игра окончена!</h2>
+
             <h2>Итог: ${score} / 25000</h2>
+
             <button onclick="location.reload()">
                 Играть снова
             </button>
@@ -488,7 +697,7 @@ function finishRound() {
 }
 
 // ==========================================
-// КНОПКИ
+// КНОПКИ ИГРЫ
 // ==========================================
 
 guessButton.addEventListener("click", () => {
@@ -561,6 +770,7 @@ function createFallbackCube() {
     });
 
     const texture = new THREE.CubeTexture(faces);
+
     texture.needsUpdate = true;
 
     return texture;
@@ -603,6 +813,7 @@ function createPanorama() {
     panoramaScene.background = createFallbackCube();
 
     let dragging = false;
+
     let previousX = 0;
     let previousY = 0;
 
@@ -647,7 +858,7 @@ function createPanorama() {
     canvas.addEventListener("pointerup", stopDragging);
     canvas.addEventListener("pointercancel", stopDragging);
 
-    // Приближение и отдаление
+    // Приближение и отдаление панорамы
     canvas.addEventListener("wheel", (event) => {
         panoramaCamera.fov += event.deltaY * 0.025;
 
@@ -696,7 +907,9 @@ generateMap();
 drawMap();
 
 timerElement.textContent = "03:00";
-roundInfo.textContent = `Раунд 1 / ${ROUNDS}`;
+
+roundInfo.textContent =
+    `Раунд 1 / ${ROUNDS}`;
 
 coordinatesElement.textContent =
     "Метка не установлена";
