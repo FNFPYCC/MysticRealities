@@ -503,12 +503,12 @@ function loadPanorama(location) {
         `../../assets/panoramas/${location.folder}/`;
 
     const imagePaths = [
+        basePath + "panorama_0.png",
         basePath + "panorama_1.png",
-        basePath + "panorama_2.png",
         basePath + "panorama_4.png",
         basePath + "panorama_5.png",
-        basePath + "panorama_3.png",
-        basePath + "panorama_0.png"
+        basePath + "panorama_2.png",
+        basePath + "panorama_3.png"
     ];
 
     loadingElement.textContent =
