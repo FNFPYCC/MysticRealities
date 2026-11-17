@@ -39,8 +39,8 @@ const LOCATIONS = [
     {
         name: "Season 1 — Cap 1",
         folder: "season1/cap1",
-        x: 1250,
-        z: -3400
+        x: -232,
+        z: 684
     }
 
     // Пример добавления следующей главы:
@@ -313,12 +313,12 @@ function loadPanorama(location) {
         `../../assets/panoramas/${location.folder}/`;
 
     const imagePaths = [
-        basePath + "px.jpg",
-        basePath + "nx.jpg",
-        basePath + "py.jpg",
-        basePath + "ny.jpg",
-        basePath + "pz.jpg",
-        basePath + "nz.jpg"
+        basePath + "panorama_0.png",
+        basePath + "panorama_1.png",
+        basePath + "panorama_2.png",
+        basePath + "panorama_3.png",
+        basePath + "panorama_4.png",
+        basePath + "panorama_5.png"
     ];
 
     loadingElement.textContent =
