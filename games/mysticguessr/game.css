@@ -371,12 +371,87 @@ button:disabled {
         min-height: 420px;
     }
 
-    .map-widget {
-        width: 190px;
+    
+/* Карта всегда поверх игрового окна */
+.map-widget {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1000;
 
-        right: 10px;
-        bottom: 10px;
-    }
+    display: flex;
+    flex-direction: column;
+
+    width: 260px;
+    padding: 14px;
+
+    background: #171324;
+    border: 1px solid #8b5cf6;
+    border-radius: 14px;
+
+    box-shadow: 0 8px 30px #0009;
+}
+
+/* Холст карты */
+.map-canvas-wrapper {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+#worldMap {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+#worldMap:active {
+    cursor: grabbing;
+}
+
+/* Развёрнутая карта */
+.map-widget.expanded {
+    position: fixed;
+    inset: 3%;
+    z-index: 2000;
+
+    width: auto;
+    height: auto;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.map-widget.expanded .map-canvas-wrapper {
+    flex: 1;
+    min-height: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.map-widget.expanded #worldMap {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+.map-widget.expanded #closeMapButton {
+    display: block;
+}
+
+#closeMapButton {
+    display: none;
+}
+
 
     .map-widget.expanded {
         inset: 2%;

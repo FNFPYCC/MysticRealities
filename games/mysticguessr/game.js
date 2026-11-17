@@ -4,11 +4,13 @@
 // Сезоны, главы, 360° панорамы и метки
 // ==========================================
 
-// Элементы страницы
-const mapCanvas = document.getElementById("worldMap");
-const ctx = mapCanvas.getContext("2d");
+// ==========================================
+// ЭЛЕМЕНТЫ СТРАНИЦЫ
+// ==========================================
 
+const mapCanvas = document.getElementById("worldMap");
 const mapWidget = document.getElementById("mapWidget");
+
 const expandMapButton = document.getElementById("expandMapButton");
 const closeMapButton = document.getElementById("closeMapButton");
 const resetMapButton = document.getElementById("resetMapButton");
@@ -22,6 +24,19 @@ const roundInfo = document.getElementById("roundInfo");
 const panoramaElement = document.getElementById("panorama");
 const loadingElement = document.getElementById("loading");
 
+if (!mapCanvas || !mapWidget || !timerElement ||
+    !coordinatesElement || !resultElement ||
+    !guessButton || !startButton || !roundInfo ||
+    !panoramaElement || !loadingElement) {
+    throw new Error("MysticGuessr: не найдены необходимые элементы HTML.");
+}
+
+const ctx = mapCanvas.getContext("2d");
+
+if (!ctx) {
+    throw new Error("MysticGuessr: не удалось создать Canvas-контекст карты.");
+}
+
 // ==========================================
 // НАСТРОЙКИ ИГРЫ
 // ==========================================
@@ -31,7 +46,7 @@ const ROUNDS = 5;
 const ROUND_TIME = 180;
 
 // ==========================================
-// НАСТРОЙКИ КАРТЫ
+// СОСТОЯНИЕ КАРТЫ
 // ==========================================
 
 let mapScale = 1;
@@ -48,7 +63,7 @@ let mapPointerStartX = 0;
 let mapPointerStartY = 0;
 
 // ==========================================
-// СПИСОК ЛОКАЦИЙ
+// ЛОКАЦИИ
 // ==========================================
 
 const LOCATIONS = [
@@ -59,7 +74,7 @@ const LOCATIONS = [
         z: 684
     }
 
-    // Пример добавления следующей главы:
+    // Следующая глава:
     //
     // ,{
     //     name: "Season 1 — Cap 2",
@@ -67,8 +82,6 @@ const LOCATIONS = [
     //     x: -2500,
     //     z: 1800
     // }
-    //
-    // Следующие сезоны добавляются точно так же.
 ];
 
 // ==========================================
@@ -170,7 +183,7 @@ function generateMap() {
         }
     }
 
-    // Пиксельная сетка
+    // Сетка
     ctx.strokeStyle = "#ffffff12";
     ctx.lineWidth = 1;
 
@@ -188,7 +201,7 @@ function generateMap() {
 }
 
 // ==========================================
-// КООРДИНАТЫ И КАРТА
+// КООРДИНАТЫ
 // ==========================================
 
 function worldToMap(location) {
@@ -200,30 +213,47 @@ function worldToMap(location) {
 
 function mapToWorld(x, y) {
     return {
-        x: Math.round(
-            (x / mapCanvas.width - 0.5) * WORLD_SIZE
-        ),
-
-        z: Math.round(
-            (y / mapCanvas.height - 0.5) * WORLD_SIZE
-        )
+        x: Math.round((x / mapCanvas.width - 0.5) * WORLD_SIZE),
+        z: Math.round((y / mapCanvas.height - 0.5) * WORLD_SIZE)
     };
 }
 
 // ==========================================
-// ОТРИСОВКА МЕТОК
+// ОГРАНИЧЕНИЕ ПЕРЕМЕЩЕНИЯ КАРТЫ
+// ==========================================
+
+function clampMapOffset() {
+    const minOffset = mapCanvas.width * (1 - mapScale);
+
+    mapOffsetX = Math.max(
+        minOffset,
+        Math.min(0, mapOffsetX)
+    );
+
+    mapOffsetY = Math.max(
+        minOffset,
+        Math.min(0, mapOffsetY)
+    );
+
+    if (mapScale <= 1) {
+        mapScale = 1;
+        mapOffsetX = 0;
+        mapOffsetY = 0;
+    }
+}
+
+// ==========================================
+// МЕТКИ
 // ==========================================
 
 function drawMarker(position, color, radius = 10) {
     const p = worldToMap(position);
 
-    // Тень метки
     ctx.beginPath();
     ctx.arc(p.x, p.y, radius + 3, 0, Math.PI * 2);
     ctx.fillStyle = "#00000066";
     ctx.fill();
 
-    // Основная метка
     ctx.beginPath();
     ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
     ctx.fillStyle = color;
@@ -248,7 +278,8 @@ function drawMap() {
         mapCanvas.height
     );
 
-    // Применяем масштаб и перемещение
+    clampMapOffset();
+
     ctx.setTransform(
         mapScale,
         0,
@@ -260,16 +291,13 @@ function drawMap() {
 
     generateMap();
 
-    // Метка игрока
     if (guess) {
         drawMarker(guess, "#a77aff", 10);
     }
 
-    // Правильная метка
     if (roundFinished && target) {
         drawMarker(target, "#46e58c", 9);
 
-        // Линия между метками
         if (guess) {
             const g = worldToMap(guess);
             const p = worldToMap(target);
@@ -286,25 +314,21 @@ function drawMap() {
         }
     }
 
-    // Сбрасываем трансформацию
     ctx.setTransform(1, 0, 0, 1, 0, 0);
 }
 
 // ==========================================
-// УПРАВЛЕНИЕ КАРТОЙ
+// ПОЛУЧЕНИЕ КООРДИНАТ КУРСОРА
 // ==========================================
 
-// Получение координат на карте с учётом масштаба
 function getMapPosition(event) {
     const rect = mapCanvas.getBoundingClientRect();
 
     const screenX =
-        (event.clientX - rect.left) /
-        rect.width * mapCanvas.width;
+        (event.clientX - rect.left) / rect.width * mapCanvas.width;
 
     const screenY =
-        (event.clientY - rect.top) /
-        rect.height * mapCanvas.height;
+        (event.clientY - rect.top) / rect.height * mapCanvas.height;
 
     return {
         x: (screenX - mapOffsetX) / mapScale,
@@ -312,9 +336,14 @@ function getMapPosition(event) {
     };
 }
 
-// Начало перемещения карты
+// ==========================================
+// НАЧАЛО ПЕРЕМЕЩЕНИЯ
+// ==========================================
+
 mapCanvas.addEventListener("pointerdown", (event) => {
     if (event.button !== 0) return;
+
+    event.preventDefault();
 
     mapDragging = true;
     mapDragMoved = false;
@@ -328,7 +357,10 @@ mapCanvas.addEventListener("pointerdown", (event) => {
     mapCanvas.setPointerCapture(event.pointerId);
 });
 
-// Перемещение карты
+// ==========================================
+// ПЕРЕМЕЩЕНИЕ КАРТЫ
+// ==========================================
+
 mapCanvas.addEventListener("pointermove", (event) => {
     if (!mapDragging) return;
 
@@ -345,12 +377,10 @@ mapCanvas.addEventListener("pointermove", (event) => {
     if (mapDragMoved) {
         const rect = mapCanvas.getBoundingClientRect();
 
-        mapOffsetX +=
-            dx / rect.width * mapCanvas.width;
+        mapOffsetX += dx / rect.width * mapCanvas.width;
+        mapOffsetY += dy / rect.height * mapCanvas.height;
 
-        mapOffsetY +=
-            dy / rect.height * mapCanvas.height;
-
+        clampMapOffset();
         drawMap();
     }
 
@@ -358,13 +388,15 @@ mapCanvas.addEventListener("pointermove", (event) => {
     mapLastY = event.clientY;
 });
 
-// Завершение перемещения или установка метки
+// ==========================================
+// ЗАВЕРШЕНИЕ ПЕРЕМЕЩЕНИЯ И УСТАНОВКА МЕТКИ
+// ==========================================
+
 function stopMapDragging(event) {
     if (!mapDragging) return;
 
     mapDragging = false;
 
-    // Если двигали карту, не ставим метку
     if (mapDragMoved) return;
 
     if (!gameStarted || roundFinished) return;
@@ -380,13 +412,9 @@ function stopMapDragging(event) {
         return;
     }
 
-    guess = mapToWorld(
-        position.x,
-        position.y
-    );
+    guess = mapToWorld(position.x, position.y);
 
-    coordinatesElement.textContent =
-        "Метка установлена!";
+    coordinatesElement.textContent = "Метка установлена!";
 
     guessButton.disabled = false;
 
@@ -409,33 +437,26 @@ mapCanvas.addEventListener("wheel", (event) => {
     const rect = mapCanvas.getBoundingClientRect();
 
     const mouseX =
-        (event.clientX - rect.left) /
-        rect.width * mapCanvas.width;
+        (event.clientX - rect.left) / rect.width * mapCanvas.width;
 
     const mouseY =
-        (event.clientY - rect.top) /
-        rect.height * mapCanvas.height;
+        (event.clientY - rect.top) / rect.height * mapCanvas.height;
 
     const oldScale = mapScale;
 
-    // Вверх — увеличить, вниз — уменьшить
-    const zoomFactor =
-        event.deltaY < 0 ? 1.15 : 1 / 1.15;
+    const zoomFactor = event.deltaY < 0 ? 1.15 : 1 / 1.15;
 
     mapScale = Math.max(
         1,
         Math.min(8, mapScale * zoomFactor)
     );
 
-    // Масштабирование относительно курсора
     const ratio = mapScale / oldScale;
 
-    mapOffsetX =
-        mouseX - (mouseX - mapOffsetX) * ratio;
+    mapOffsetX = mouseX - (mouseX - mapOffsetX) * ratio;
+    mapOffsetY = mouseY - (mouseY - mapOffsetY) * ratio;
 
-    mapOffsetY =
-        mouseY - (mouseY - mapOffsetY) * ratio;
-
+    clampMapOffset();
     drawMap();
 
 }, { passive: false });
@@ -444,29 +465,30 @@ mapCanvas.addEventListener("wheel", (event) => {
 // СБРОС КАРТЫ
 // ==========================================
 
-resetMapButton.addEventListener("click", () => {
+function resetMap() {
     mapScale = 1;
-
     mapOffsetX = 0;
     mapOffsetY = 0;
 
     drawMap();
-});
+}
+
+resetMapButton.addEventListener("click", resetMap);
 
 // ==========================================
-// ОТКРЫТИЕ И ЗАКРЫТИЕ КАРТЫ
+// РАЗВОРАЧИВАНИЕ КАРТЫ
 // ==========================================
 
 expandMapButton.addEventListener("click", () => {
     mapWidget.classList.add("expanded");
 
-    drawMap();
+    requestAnimationFrame(drawMap);
 });
 
 closeMapButton.addEventListener("click", () => {
     mapWidget.classList.remove("expanded");
 
-    drawMap();
+    requestAnimationFrame(drawMap);
 });
 
 // ==========================================
@@ -502,6 +524,11 @@ function loadPanorama(location) {
     const basePath =
         `../../assets/panoramas/${location.folder}/`;
 
+    // Порядок CubeTextureLoader:
+    // +X, -X, +Y, -Y, +Z, -Z
+    // В этой конфигурации верх — panorama_4,
+    // низ — panorama_5.
+
     const imagePaths = [
         basePath + "panorama_0.png",
         basePath + "panorama_1.png",
@@ -511,8 +538,7 @@ function loadPanorama(location) {
         basePath + "panorama_3.png"
     ];
 
-    loadingElement.textContent =
-        `Загрузка: ${location.name}`;
+    loadingElement.textContent = `Загрузка: ${location.name}`;
 
     new THREE.CubeTextureLoader().load(
         imagePaths,
@@ -539,11 +565,7 @@ function loadPanorama(location) {
         (error) => {
             if (requestId !== panoramaRequestId) return;
 
-            console.error(
-                "Ошибка загрузки панорамы:",
-                location.name,
-                error
-            );
+            console.error("Ошибка загрузки панорамы:", error);
 
             loadingElement.textContent =
                 `Ошибка загрузки: ${location.name}. Проверь текстуры.`;
@@ -558,8 +580,7 @@ function loadPanorama(location) {
 function startRound() {
     if (LOCATIONS.length === 0) {
         resultElement.textContent =
-            "Сначала добавь хотя бы одну локацию в LOCATIONS.";
-
+            "Сначала добавь локацию в LOCATIONS.";
         return;
     }
 
@@ -571,9 +592,7 @@ function startRound() {
     gameStarted = true;
     roundFinished = false;
 
-    coordinatesElement.textContent =
-        "Метка не установлена";
-
+    coordinatesElement.textContent = "Метка не установлена";
     resultElement.innerHTML = "";
 
     guessButton.disabled = true;
@@ -581,39 +600,27 @@ function startRound() {
     startButton.disabled = true;
     startButton.textContent = "Раунд идёт";
 
-    roundInfo.textContent =
-        `Раунд ${round} / ${ROUNDS}`;
-
+    roundInfo.textContent = `Раунд ${round} / ${ROUNDS}`;
     timerElement.textContent = "03:00";
 
-    // Сбрасываем положение карты между раундами
-    mapScale = 1;
-    mapOffsetX = 0;
-    mapOffsetY = 0;
-
-    drawMap();
+    resetMap();
 
     loadPanorama(target);
 
     clearInterval(timerInterval);
 
-    timerInterval = setInterval(
-        updateTimer,
-        1000
-    );
+    timerInterval = setInterval(updateTimer, 1000);
 }
 
 // ==========================================
-// РАСЧЁТ РАССТОЯНИЯ
+// РАССТОЯНИЕ
 // ==========================================
 
 function calculateDistance(a, b) {
     const dx = a.x - b.x;
     const dz = a.z - b.z;
 
-    return Math.round(
-        Math.sqrt(dx * dx + dz * dz)
-    );
+    return Math.round(Math.sqrt(dx * dx + dz * dz));
 }
 
 // ==========================================
@@ -632,19 +639,11 @@ function finishRound() {
     let distance = null;
 
     if (guess) {
-        distance = calculateDistance(
-            target,
-            guess
-        );
+        distance = calculateDistance(target, guess);
 
         gained = Math.max(
             0,
-            Math.round(
-                5000 * Math.max(
-                    0,
-                    1 - distance / 28284
-                )
-            )
+            Math.round(5000 * Math.max(0, 1 - distance / 28284))
         );
     }
 
@@ -654,28 +653,16 @@ function finishRound() {
 
     resultElement.innerHTML = `
         <h3>Результат раунда!</h3>
-
         <p>Локация: ${target.name}</p>
-
-        <p>
-            Расстояние:
-            ${distance === null
-                ? "Ответ не дан"
-                : distance + " блоков"}
-        </p>
-
+        <p>Расстояние: ${distance === null ? "Ответ не дан" : distance + " блоков"}</p>
         <p>Получено очков: ${gained}</p>
-
         <p>Общий счёт: ${score}</p>
     `;
 
     coordinatesElement.textContent =
-        guess
-            ? "Метка проверена"
-            : "Метка не установлена";
+        guess ? "Метка проверена" : "Метка не установлена";
 
     guessButton.disabled = true;
-
     startButton.disabled = false;
 
     if (round < ROUNDS) {
@@ -686,12 +673,8 @@ function finishRound() {
 
         resultElement.innerHTML += `
             <h2>Игра окончена!</h2>
-
             <h2>Итог: ${score} / 25000</h2>
-
-            <button onclick="location.reload()">
-                Играть снова
-            </button>
+            <button onclick="location.reload()">Играть снова</button>
         `;
     }
 }
@@ -740,9 +723,7 @@ function createFallbackCube() {
 
         const c = canvas.getContext("2d");
 
-        const gradient = c.createLinearGradient(
-            0, 0, 0, 256
-        );
+        const gradient = c.createLinearGradient(0, 0, 0, 256);
 
         gradient.addColorStop(0, pair[0]);
         gradient.addColorStop(0.62, pair[0]);
@@ -754,8 +735,7 @@ function createFallbackCube() {
 
         if (index !== 5) {
             for (let i = 0; i < 100; i++) {
-                c.fillStyle =
-                    i % 2 ? "#315f32" : "#6a9747";
+                c.fillStyle = i % 2 ? "#315f32" : "#6a9747";
 
                 c.fillRect(
                     Math.random() * 256,
@@ -770,7 +750,6 @@ function createFallbackCube() {
     });
 
     const texture = new THREE.CubeTexture(faces);
-
     texture.needsUpdate = true;
 
     return texture;
@@ -781,35 +760,43 @@ function createFallbackCube() {
 // ==========================================
 
 function createPanorama() {
+    if (typeof THREE === "undefined") {
+        loadingElement.textContent = "Ошибка: Three.js не загружен.";
+        console.error("Three.js не найден.");
+        return;
+    }
+
     panoramaScene = new THREE.Scene();
+
+    const width = Math.max(1, panoramaElement.clientWidth);
+    const height = Math.max(1, panoramaElement.clientHeight);
 
     panoramaCamera = new THREE.PerspectiveCamera(
         75,
-        panoramaElement.clientWidth /
-            panoramaElement.clientHeight,
+        width / height,
         0.1,
         1000
     );
 
-    panoramaRenderer = new THREE.WebGLRenderer({
-        antialias: true
-    });
+    try {
+        panoramaRenderer = new THREE.WebGLRenderer({
+            antialias: true
+        });
+    } catch (error) {
+        loadingElement.textContent = "Не удалось запустить WebGL.";
+        console.error(error);
+        return;
+    }
 
     panoramaRenderer.setPixelRatio(
         Math.min(window.devicePixelRatio, 2)
     );
 
-    panoramaRenderer.setSize(
-        panoramaElement.clientWidth,
-        panoramaElement.clientHeight
-    );
+    panoramaRenderer.setSize(width, height);
 
-    panoramaElement.appendChild(
-        panoramaRenderer.domElement
-    );
+    panoramaElement.appendChild(panoramaRenderer.domElement);
 
     panoramaCamera.rotation.order = "YXZ";
-
     panoramaScene.background = createFallbackCube();
 
     let dragging = false;
@@ -821,7 +808,6 @@ function createPanorama() {
 
     canvas.style.touchAction = "none";
 
-    // Начало вращения
     canvas.addEventListener("pointerdown", (event) => {
         dragging = true;
 
@@ -831,15 +817,11 @@ function createPanorama() {
         canvas.setPointerCapture(event.pointerId);
     });
 
-    // Вращение камеры
     canvas.addEventListener("pointermove", (event) => {
         if (!dragging) return;
 
-        panoramaYaw -=
-            (event.clientX - previousX) * 0.004;
-
-        panoramaPitch -=
-            (event.clientY - previousY) * 0.004;
+        panoramaYaw -= (event.clientX - previousX) * 0.004;
+        panoramaPitch -= (event.clientY - previousY) * 0.004;
 
         panoramaPitch = Math.max(
             -1.45,
@@ -850,7 +832,6 @@ function createPanorama() {
         previousY = event.clientY;
     });
 
-    // Окончание вращения
     function stopDragging() {
         dragging = false;
     }
@@ -858,7 +839,6 @@ function createPanorama() {
     canvas.addEventListener("pointerup", stopDragging);
     canvas.addEventListener("pointercancel", stopDragging);
 
-    // Приближение и отдаление панорамы
     canvas.addEventListener("wheel", (event) => {
         panoramaCamera.fov += event.deltaY * 0.025;
 
@@ -870,7 +850,6 @@ function createPanorama() {
         panoramaCamera.updateProjectionMatrix();
     });
 
-    // Анимация
     function animate() {
         requestAnimationFrame(animate);
 
@@ -885,17 +864,16 @@ function createPanorama() {
 
     animate();
 
-    // Изменение размеров окна
     window.addEventListener("resize", () => {
-        const width = panoramaElement.clientWidth;
-        const height = panoramaElement.clientHeight;
+        const newWidth = panoramaElement.clientWidth;
+        const newHeight = panoramaElement.clientHeight;
 
-        if (!width || !height) return;
+        if (!newWidth || !newHeight) return;
 
-        panoramaCamera.aspect = width / height;
+        panoramaCamera.aspect = newWidth / newHeight;
         panoramaCamera.updateProjectionMatrix();
 
-        panoramaRenderer.setSize(width, height);
+        panoramaRenderer.setSize(newWidth, newHeight);
     });
 }
 
@@ -903,15 +881,14 @@ function createPanorama() {
 // ЗАПУСК
 // ==========================================
 
+mapCanvas.width = 512;
+mapCanvas.height = 512;
+
 generateMap();
 drawMap();
 
 timerElement.textContent = "03:00";
-
-roundInfo.textContent =
-    `Раунд 1 / ${ROUNDS}`;
-
-coordinatesElement.textContent =
-    "Метка не установлена";
+roundInfo.textContent = `Раунд 1 / ${ROUNDS}`;
+coordinatesElement.textContent = "Метка не установлена";
 
 createPanorama();
