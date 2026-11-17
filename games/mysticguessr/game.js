@@ -135,7 +135,7 @@ const LOCATIONS = [
     },
     {
         name: "Season 1 — Cap 10",
-        folder: "season1/cap`0`",
+        folder: "season1/cap10",
         x: -866,
         z: -559
     }
