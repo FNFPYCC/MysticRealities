@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ЗАМЕНИ: название статьи -->
+    <title>Имя Персонажа — MysticRealities Wiki</title>
+    <meta name="description" content="Статья о персонаже MysticRealities.">
+
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="article.css">
+</head>
+<body>
+
+<header class="header">
+    <a href="../index.html" class="logo">
+        MYSTIC<span>REALITIES</span>
+        <small>WIKI</small>
+    </a>
+    <nav>
+        <a href="../index.html">Главная сайта</a>
+        <a href="../index.html#categories">Категории</a>
+        <a href="../index.html#articles">Статьи</a>
+    </nav>
+</header>
+
+<main class="article-page">
+
+    <!-- Хлебные крошки -->
+    <nav class="breadcrumbs">
+        <a href="../index.html">Главная Wiki</a>
+        <span>/</span>
+        <a href="../index.html#characters">Персонажи</a>
+        <span>/</span>
+        Имя Персонажа
+    </nav>
+
+    <!-- Заголовок -->
+    <header class="article-header">
+        <div class="eyebrow">ПЕРСОНАЖИ</div>
+        <h1>Имя Персонажа</h1>
+        <p class="article-subtitle">
+            Краткое описание персонажа в одну-две строки.
+            Кто он, чем известен, из какой вселенной.
+        </p>
+    </header>
+
+    <div class="article-layout">
+
+        <!-- ===== Основной текст ===== -->
+        <article class="article-body">
+
+            <h2>Общая информация</h2>
+            <p>
+                Здесь основной текст статьи. Абзацы, списки, цитаты —
+                всё оформлено в едином стиле.
+            </p>
+
+            <h2>История</h2>
+            <p>
+                Описание истории персонажа. Можно использовать
+                <a href="#">внутренние ссылки</a> на другие статьи.
+            </p>
+
+            <blockquote>
+                «Цитата персонажа или важная фраза из лора.»
+            </blockquote>
+
+            <h2>Способности</h2>
+            <ul>
+                <li>Способность первая</li>
+                <li>Способность вторая</li>
+                <li>Способность третья</li>
+            </ul>
+
+            <h3>Подраздел</h3>
+            <p>Дополнительный текст с подзаголовком.</p>
+
+            <!-- ===== ФОТО ===== -->
+            <section class="media-section" id="gallery">
+                <h2>Фотогалерея</h2>
+                <p style="color:var(--muted);font-size:13px;margin-bottom:15px;">
+                    Нажми на фото, чтобы увеличить.
+                </p>
+
+                <div class="gallery">
+
+                    <!-- Копируй figure для каждого фото -->
+                    <figure>
+                        <img src="media/example1.jpg"
+                             alt="Описание фото 1"
+                             loading="lazy">
+                        <figcaption>Подпись к фото 1</figcaption>
+                    </figure>
+
+                    <figure>
+                        <img src="media/example2.jpg"
+                             alt="Описание фото 2"
+                             loading="lazy">
+                        <figcaption>Подпись к фото 2</figcaption>
+                    </figure>
+
+                    <figure>
+                        <img src="media/example3.jpg"
+                             alt="Описание фото 3"
+                             loading="lazy">
+                        <figcaption>Подпись к фото 3</figcaption>
+                    </figure>
+
+                </div>
+            </section>
+
+            <!-- ===== ВИДЕО ===== -->
+            <section class="media-section" id="videos">
+                <h2>Видео</h2>
+
+                <div class="video-grid">
+
+                    <!-- YouTube: замени VIDEO_ID -->
+                    <div class="video-item">
+                        <iframe
+                            src="https://www.youtube.com/embed/VIDEO_ID"
+                            title="Видео о персонаже"
+                            allowfullscreen
+                            loading="lazy">
+                        </iframe>
+                        <div class="video-caption">Подпись к видео</div>
+                    </div>
+
+                    <!-- Локальный видеофайл из media/ -->
+                    <div class="video-item">
+                        <video controls preload="metadata">
+                            <source src="media/example-video.mp4" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>
+                        <div class="video-caption">Локальное видео</div>
+                    </div>
+
+                </div>
+            </section>
+
+        </article>
+
+        <!-- ===== Инфобокс справа ===== -->
+        <aside class="infobox">
+
+            <div class="infobox-title">КАРТОЧКА ПЕРСОНАЖА</div>
+
+            <!-- Главное фото персонажа -->
+            <img src="media/example-portrait.jpg"
+                 alt="Портрет персонажа"
+                 class="infobox-image"
+                 loading="lazy">
+
+            <table>
+                <tr><th>Полное имя</th><td>Имя Фамилия</td></tr>
+                <tr><th>Алиас</th><td>Прозвище</td></tr>
+                <tr><th>Раса</th><td>—</td></tr>
+                <tr><th>Возраст</th><td>—</td></tr>
+                <tr><th>Роль</th><td>—</td></tr>
+                <tr><th>Вселенная</th><td>—</td></tr>
+                <tr><th>Статус</th><td>Активен</td></tr>
+            </table>
+
+        </aside>
+
+    </div>
+
+</main>
+
+<!-- Лайтбокс -->
+<div class="lightbox" id="lightbox">
+    <span class="lightbox-close" id="lightboxClose">×</span>
+    <img src="" alt="" id="lightboxImg">
+</div>
+
+<script>
+/* Лайтбокс для галереи */
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+const lightboxClose = document.getElementById("lightboxClose");
+
+document.querySelectorAll(".gallery img").forEach(img => {
+    img.addEventListener("click", () => {
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt;
+        lightbox.classList.add("open");
+    });
+});
+
+lightboxClose.addEventListener("click", () => {
+    lightbox.classList.remove("open");
+});
+
+lightbox.addEventListener("click", e => {
+    if (e.target === lightbox) {
+        lightbox.classList.remove("open");
+    }
+});
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") lightbox.classList.remove("open");
+});
+</script>
+
+</body>
+</html>

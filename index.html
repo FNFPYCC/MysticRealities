@@ -4,79 +4,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MysticRealities</title>
+
+    <title>MysticRealities — Beyond Reality</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- HEADER -->
     <header class="header">
-        <div class="logo">Mystic<span>Realities</span></div>
+        <a href="#home" class="logo">
+            Mystic<span>Realities</span>
+        </a>
 
         <nav>
             <a href="#home">Главная</a>
-            <a href="#games">Игры</a>
+            <a href="#wiki">Wiki</a>
+            <a href="#projects">Проекты</a>
             <a href="#about">О проекте</a>
         </nav>
+
+        <div class="header-status">
+            <span class="status-dot"></span>
+            MYSTIC NETWORK
+        </div>
     </header>
 
     <main>
+
+        <!-- HERO -->
         <section class="hero" id="home">
+            <div class="hero-overlay"></div>
+
             <div class="hero-content">
-                <p class="subtitle">WELCOME TO ANOTHER WORLD</p>
-                <h1>MysticRealities</h1>
+                <p class="subtitle">WELCOME TO THE UNKNOWN</p>
+
+                <h1>
+                    MYSTIC<span>REALITIES</span>
+                </h1>
+
+                <div class="hero-line"></div>
+
                 <p class="description">
-                    Открой новые миры, исследуй реальности
-                    и найди своё приключение.
+                    За пределами привычного мира существуют
+                    другие реальности. Истории, миры и тайны,
+                    которые только предстоит открыть.
                 </p>
-                <a href="#games" class="main-button">
-                    Исследовать игры
-                </a>
+
+                <div class="hero-buttons">
+                    <a href="#wiki" class="main-button">
+                        Исследовать Wiki
+                    </a>
+
+                    <a href="#projects" class="secondary-button">
+                        Наши проекты
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-bottom">
+                <span>AN UNIVERSE WITHOUT LIMITS</span>
+                <span>MR — 2026</span>
             </div>
         </section>
 
-        <section class="games" id="games">
-            <h2>Наши игры</h2>
-            <p class="section-description">
-                Выбери свою реальность
-            </p>
+        <!-- INTRO -->
+        <section class="intro">
+            <div class="intro-label">01 / THE UNIVERSE</div>
 
-            <div class="game-grid">
+            <div class="intro-content">
+                <h2>
+                    Больше, чем<br>
+                    просто <span>реальность.</span>
+                </h2>
 
-                <article class="game-card">
-                    <div class="game-image">
-                        <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=900"
-                             alt="MysticGuessr">
+                <p>
+                    MysticRealities — пространство, объединяющее
+                    различные миры, истории, персонажей и
+                    интерактивные проекты.
+                    Здесь каждая реальность имеет собственную
+                    историю, а каждая история — свои тайны.
+                </p>
+            </div>
+        </section>
+
+        <!-- WIKI -->
+        <section class="wiki-section" id="wiki">
+            <div class="section-heading">
+                <div>
+                    <p class="section-label">02 / KNOWLEDGE DATABASE</p>
+                    <h2>МИСТИЧЕСКАЯ <span>WIKI</span></h2>
+                </div>
+
+                <span class="section-number">01</span>
+            </div>
+
+            <div class="wiki-card">
+                <div class="wiki-content">
+                    <span class="wiki-tag">MYSTIC ARCHIVES</span>
+
+                    <h3>База знаний<br>о наших мирах</h3>
+
+                    <p>
+                        Изучай историю вселенной, знакомься
+                        с персонажами, открывай новые измерения
+                        и узнавай подробности событий.
+                    </p>
+
+                    <a href="wiki/index.html" class="text-button">
+                        ОТКРЫТЬ WIKI <span>↗</span>
+                    </a>
+                </div>
+
+                <div class="wiki-decoration">
+                    <div class="wiki-symbol">M</div>
+                    <span>ARCHIVE // 001</span>
+                </div>
+            </div>
+
+            <div class="wiki-categories">
+                <div class="category">
+                    <span>01</span>
+                    <h4>Персонажи</h4>
+                    <p>Герои, союзники и другие обитатели миров.</p>
+                </div>
+
+                <div class="category">
+                    <span>02</span>
+                    <h4>Вселенные</h4>
+                    <p>Измерения, локации и альтернативные реальности.</p>
+                </div>
+
+                <div class="category">
+                    <span>03</span>
+                    <h4>История</h4>
+                    <p>События, сезоны, главы и хронология.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROJECTS -->
+        <section class="projects" id="projects">
+            <div class="section-heading">
+                <div>
+                    <p class="section-label">03 / INTERACTIVE EXPERIENCES</p>
+                    <h2>НАШИ <span>ПРОЕКТЫ</span></h2>
+                </div>
+
+                <span class="section-number">02</span>
+            </div>
+
+            <div class="project-grid">
+
+                <article class="project-card">
+                    <div class="project-image mysticguessr-image">
+                        <span class="project-overlay-text">MR / GAME 001</span>
+                        <span class="project-symbol">M</span>
                     </div>
 
-                    <div class="game-info">
-                        <span class="game-tag">MINECRAFT</span>
+                    <div class="project-info">
+                        <div class="project-meta">
+                            <span>INTERACTIVE PROJECT</span>
+                            <span class="project-status">AVAILABLE</span>
+                        </div>
+
                         <h3>MysticGuessr</h3>
+
                         <p>
                             Исследуй Minecraft-миры в формате 360°
-                            и угадывай своё местоположение.
+                            и попробуй определить своё местоположение.
                         </p>
 
-                        <button id="playButton">
-                            Играть
+                        <button id="playButton" class="project-button">
+                            Открыть проект <span>↗</span>
                         </button>
                     </div>
                 </article>
 
-                <article class="game-card coming-soon">
-                    <div class="game-image second-image">
-                        <span>?</span>
+                <article class="project-card coming-soon">
+                    <div class="project-image future-image">
+                        <span class="future-question">?</span>
+                        <span class="project-overlay-text">MR / UNKNOWN</span>
                     </div>
 
-                    <div class="game-info">
-                        <span class="game-tag">COMING SOON</span>
+                    <div class="project-info">
+                        <div class="project-meta">
+                            <span>UNKNOWN PROJECT</span>
+                            <span class="project-status inactive">IN DEVELOPMENT</span>
+                        </div>
+
                         <h3>Новая реальность</h3>
+
                         <p>
-                            Новые приключения появятся здесь
-                            в будущем.
+                            Новые проекты и эксперименты MysticRealities.
+                            Подробности пока остаются неизвестными.
                         </p>
 
-                        <button disabled>
-                            Скоро
+                        <button class="project-button disabled" disabled>
+                            Скоро...
                         </button>
                     </div>
                 </article>
@@ -84,19 +209,41 @@
             </div>
         </section>
 
+        <!-- ABOUT -->
         <section class="about" id="about">
-            <h2>О MysticRealities</h2>
-            <p>
-                MysticRealities — платформа, объединяющая
-                необычные игровые проекты и приключения.
+            <p class="section-label">04 / ABOUT THE PROJECT</p>
+
+            <h2>
+                EVERY WORLD HAS<br>
+                ITS <span>OWN STORY.</span>
+            </h2>
+
+            <p class="about-description">
+                MysticRealities — независимый творческий проект,
+                посвящённый созданию миров, историй, персонажей
+                и интерактивных впечатлений.
             </p>
+
+            <div class="about-bottom">
+                <span>MYSTICREALITIES</span>
+                <span>BEYOND THE KNOWN</span>
+            </div>
         </section>
+
     </main>
 
+    <!-- FOOTER -->
     <footer>
-        © 2026 MysticRealities. All rights reserved.
+        <div class="footer-logo">
+            Mystic<span>Realities</span>
+        </div>
+
+        <p>© 2026 MysticRealities. All rights reserved.</p>
+
+        <a href="#home">НАВЕРХ ↑</a>
     </footer>
 
     <script src="script.js"></script>
+
 </body>
 </html>

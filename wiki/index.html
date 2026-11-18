@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MysticRealities Wiki</title>
+    <meta name="description" content="Энциклопедия миров, персонажей, историй и проектов MysticRealities.">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+    <a href="../index.html" class="logo">
+        MYSTIC<span>REALITIES</span>
+        <small>WIKI</small>
+    </a>
+
+    <nav>
+        <a href="../index.html">Главная сайта</a>
+        <a href="#categories">Категории</a>
+        <a href="#articles">Статьи</a>
+    </nav>
+</header>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="sidebar-title">НАВИГАЦИЯ</div>
+
+        <a href="index.html" class="side-link active">
+            <span aria-hidden="true">⌂</span> Главная Wiki
+        </a>
+
+        <div class="sidebar-title">РАЗДЕЛЫ</div>
+
+        <a href="#minecraft" class="side-link">
+            <span aria-hidden="true">▦</span> Minecraft
+        </a>
+
+        <a href="#characters" class="side-link">
+            <span aria-hidden="true">♙</span> Персонажи
+        </a>
+
+        <a href="#lore" class="side-link">
+            <span aria-hidden="true">◈</span> Лор и вселенные
+        </a>
+
+        <a href="#archive" class="side-link">
+            <span aria-hidden="true">▤</span> Архив
+        </a>
+
+        <div class="sidebar-bottom">
+            <span class="status-dot" title="Статус: онлайн"></span>
+            MysticRealities Wiki
+            <small>Энциклопедия миров</small>
+        </div>
+    </aside>
+
+    <main class="main">
+
+        <section class="hero">
+            <div class="hero-content">
+                <div class="eyebrow">
+                    MYSTICREALITIES PROJECT
+                </div>
+
+                <h1>
+                    MYSTIC<span>REALITIES</span>
+                    <strong>WIKI</strong>
+                </h1>
+
+                <p>
+                    Энциклопедия миров, персонажей, историй
+                    и проектов MysticRealities.
+                </p>
+
+                <a href="#categories" class="hero-button">
+                    Исследовать Wiki →
+                </a>
+            </div>
+
+            <div class="hero-decoration" aria-hidden="true">
+                <div class="circle circle-one"></div>
+                <div class="circle circle-two"></div>
+                <div class="circle circle-three"></div>
+                <span>MR</span>
+            </div>
+        </section>
+
+        <section class="search-section">
+            <div>
+                <h2>Поиск по энциклопедии</h2>
+                <p>Найди нужную информацию среди статей Wiki.</p>
+            </div>
+
+            <div class="search-box">
+                <span aria-hidden="true">⌕</span>
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="Например: Изидора, Minecraft, измерения..."
+                    aria-label="Поиск по энциклопедии"
+                >
+            </div>
+
+            <p class="search-count" id="searchCount"></p>
+        </section>
+
+        <section class="section" id="categories">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">EXPLORE</div>
+                    <h2>Категории</h2>
+                </div>
+                <span class="section-number">01 / 04</span>
+            </div>
+
+            <div class="category-grid">
+
+                <a href="#minecraft" class="category-card" id="minecraft">
+                    <div class="category-icon" aria-hidden="true">▦</div>
+                    <span class="category-tag">GAME WORLD</span>
+                    <h3>Minecraft</h3>
+                    <p>
+                        Миры, измерения, модификации,
+                        механики и игровые проекты.
+                    </p>
+                    <span class="category-arrow" aria-hidden="true">→</span>
+                </a>
+
+                <a href="#characters" class="category-card" id="characters">
+                    <div class="category-icon" aria-hidden="true">♙</div>
+                    <span class="category-tag">CHARACTERS</span>
+                    <h3>Персонажи</h3>
+                    <p>
+                        Герои, их способности, истории,
+                        отношения и особенности.
+                    </p>
+                    <span class="category-arrow" aria-hidden="true">→</span>
+                </a>
+
+                <a href="#lore" class="category-card" id="lore">
+                    <div class="category-icon" aria-hidden="true">◈</div>
+                    <span class="category-tag">LORE</span>
+                    <h3>Лор и вселенные</h3>
+                    <p>
+                        Истории, события, измерения,
+                        фракции и хронология.
+                    </p>
+                    <span class="category-arrow" aria-hidden="true">→</span>
+                </a>
+
+                <a href="#archive" class="category-card" id="archive">
+                    <div class="category-icon" aria-hidden="true">▤</div>
+                    <span class="category-tag">ARCHIVE</span>
+                    <h3>Архив</h3>
+                    <p>
+                        Документы, секреты, заметки
+                        и дополнительные материалы.
+                    </p>
+                    <span class="category-arrow" aria-hidden="true">→</span>
+                </a>
+
+            </div>
+        </section>
+
+        <section class="section" id="articles">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">DATABASE</div>
+                    <h2>Статьи энциклопедии</h2>
+                </div>
+                <span class="section-number">02 / DATABASE</span>
+            </div>
+
+            <div class="article-list" id="articleList">
+
+                <a href="articles/isidora.html" class="article-card"
+                   data-title="Изидора Isidora Lumenfall персонаж">
+                    <div class="article-symbol" aria-hidden="true">♙</div>
+                    <div class="article-info">
+                        <span>ПЕРСОНАЖИ</span>
+                        <h3>Изидора (Isidora Lumenfall)</h3>
+                        <p>Информация о персонаже и её истории.</p>
+                    </div>
+                    <span class="article-arrow" aria-hidden="true">→</span>
+                </a>
+
+                <a href="articles/elirion.html" class="article-card"
+                   data-title="Элирион Питара Кикс Elirion Pythara Kix">
+                    <div class="article-symbol" aria-hidden="true">♙</div>
+                    <div class="article-info">
+                        <span>ПЕРСОНАЖИ</span>
+                        <h3>Элирион Питара Кикс</h3>
+                        <p>Старший брат Изидоры и его история.</p>
+                    </div>
+                    <span class="article-arrow" aria-hidden="true">→</span>
+                </a>
+
+                <a href="articles/nova.html" class="article-card"
+                   data-title="Нова Nova Catfall робот персонаж">
+                    <div class="article-symbol" aria-hidden="true">♙</div>
+                    <div class="article-info">
+                        <span>ПЕРСОНАЖИ</span>
+                        <h3>Нова Кэтфолл</h3>
+                        <p>Персонаж, её особенности и способности.</p>
+                    </div>
+                    <span class="article-arrow" aria-hidden="true">→</span>
+                </a>
+
+                <a href="articles/black-cats.html" class="article-card"
+                   data-title="Чёрные Коты Полной Луны команда">
+                    <div class="article-symbol" aria-hidden="true">◈</div>
+                    <div class="article-info">
+                        <span>ВСЕЛЕННЫЕ</span>
+                        <h3>Чёрные Коты Полной Луны</h3>
+                        <p>История команды и её участников.</p>
+                    </div>
+                    <span class="article-arrow" aria-hidden="true">→</span>
+                </a>
+
+                <a href="articles/minecraft.html" class="article-card"
+                   data-title="Minecraft моды миры проекты">
+                    <div class="article-symbol" aria-hidden="true">▦</div>
+                    <div class="article-info">
+                        <span>MINECRAFT</span>
+                        <h3>Minecraft — проекты</h3>
+                        <p>Игровые проекты и разработки.</p>
+                    </div>
+                    <span class="article-arrow" aria-hidden="true">→</span>
+                </a>
+
+                <a href="articles/viron.html" class="article-card"
+                   data-title="Вирон Firebyte инженер механик">
+                    <div class="article-symbol" aria-hidden="true">♙</div>
+                    <div class="article-info">
+                        <span>ПЕРСОНАЖИ</span>
+                        <h3>Вирон Файрбайт</h3>
+                        <p>Инженер, механик и создатель роботов.</p>
+                    </div>
+                    <span class="article-arrow" aria-hidden="true">→</span>
+                </a>
+
+            </div>
+
+            <div class="no-results" id="noResults">
+                Ничего не найдено. Попробуй другой запрос.
+            </div>
+        </section>
+
+        <section class="about-wiki">
+            <div class="eyebrow">ABOUT THE ENCYCLOPEDIA</div>
+            <h2>Каждая реальность имеет свою историю.</h2>
+            <p>
+                MysticRealities Wiki — место, где собирается
+                информация о мирах, персонажах и проектах.
+                Энциклопедия будет постепенно пополняться новыми статьями.
+            </p>
+        </section>
+
+        <footer>
+            <span>MYSTIC<span class="red">REALITIES</span> WIKI</span>
+            <p>© 2026 MysticRealities. Все права защищены.</p>
+            <a href="../index.html">Вернуться на главный сайт ↑</a>
+        </footer>
+
+    </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
