@@ -47,7 +47,7 @@ if (!ctx) {
 // ==========================================
 
 const WORLD_SIZE = 2208; // 1 пиксель карты = 1 блок
-const MAX_ROUNDS = 10;
+const MAX_ROUNDS = 15;
 const ROUND_TIME = 180;
 
 // Карта: картинка 2208 x 2208, холст берёт тот же размер,
@@ -79,66 +79,21 @@ let mapPointerStartY = 0;
 // ==========================================
 
 const LOCATIONS = [
-    {
-        name: "Season 1 — Cap 1",
-        folder: "season1/cap1",
-        x: -232,
-        z: 684
-    },
-    {
-        name: "Season 1 — Cap 2",
-        folder: "season1/cap2",
-        x: -421,
-        z: 226
-    },
-    {
-        name: "Season 1 — Cap 3",
-        folder: "season1/cap3",
-        x: 0,
-        z: 127
-    },
-    {
-        name: "Season 1 — Cap 4",
-        folder: "season1/cap4",
-        x: 295,
-        z: -458
-    },
-    {
-        name: "Season 1 — Cap 5",
-        folder: "season1/cap5",
-        x: -522,
-        z: -313
-    },
-    {
-        name: "Season 1 — Cap 6",
-        folder: "season1/cap6",
-        x: -295,
-        z: -632
-    },
-    {
-        name: "Season 1 — Cap 7",
-        folder: "season1/cap7",
-        x: -507,
-        z: -776
-    },
-    {
-        name: "Season 1 — Cap 8",
-        folder: "season1/cap8",
-        x: -139,
-        z: -39
-    },
-    {
-        name: "Season 1 — Cap 9",
-        folder: "season1/cap9",
-        x: -90,
-        z: 379
-    },
-    {
-        name: "Season 1 — Cap 10",
-        folder: "season1/cap10",
-        x: -866,
-        z: -559
-    }
+    {name: "Season 1 — Cap 1",folder: "season1/cap1",x: -232,z: 684},
+    {name: "Season 1 — Cap 2",folder: "season1/cap2",x: -421,z: 226},
+    {name: "Season 1 — Cap 3",folder: "season1/cap3",x: 0,z: 127},
+    {name: "Season 1 — Cap 4",folder: "season1/cap4",x: 295,z: -458},
+    {name: "Season 1 — Cap 5",folder: "season1/cap5",x: -522,z: -313},
+    {name: "Season 1 — Cap 6",folder: "season1/cap6",x: -295,z: -632},
+    {name: "Season 1 — Cap 7",folder: "season1/cap7",x: -507,z: -776},
+    {name: "Season 1 — Cap 8",folder: "season1/cap8",x: -139,z: -39},
+    {name: "Season 1 — Cap 9",folder: "season1/cap9",x: -90,z: 379},
+    { name: "Season 1 — Cap 10",folder: "season1/cap10",x: -866,z: 559},
+    { name: "Season 1 — Cap 11",folder: "season1/cap11",x: -292,z: 144},
+    { name: "Season 1 — Cap 12",folder: "season1/cap12",x: -353,z: 29},
+    { name: "Season 1 — Cap 13",folder: "season1/cap13",x: 812,z: 630},
+    { name: "Season 1 — Cap 14",folder: "season1/cap14",x: 957,z: 659},
+    { name: "Season 1 — Cap 15",folder: "season1/cap15",x: -609,z: -511}
 ];
 
 // Раундов не больше, чем локаций, чтобы они не повторялись
