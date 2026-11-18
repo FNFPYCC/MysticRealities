@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- ЗАМЕНИ: название статьи -->
-    <title>Имя Персонажа — MysticRealities Wiki</title>
-    <meta name="description" content="Статья о персонаже MysticRealities.">
+    <title>Видео — MysticRealities Wiki</title>
+    <meta name="description" content="Видеоматериалы проектов MysticRealities.">
 
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="article.css">
@@ -31,40 +30,62 @@
     <nav class="breadcrumbs">
         <a href="../index.html">Главная Wiki</a>
         <span>/</span>
-        <a href="../index.html#characters">Персонажи</a>
+        <a href="../index.html#archive">Архив</a>
         <span>/</span>
-        Имя Персонажа
+        Видео
     </nav>
 
     <!-- Заголовок -->
     <header class="article-header">
-        <div class="eyebrow">Видео</div>
+        <div class="eyebrow">АРХИВ МЕДИА</div>
         <h1>Видео</h1>
+        <p class="article-subtitle">
+            Видеоматериалы, трейлеры и записи, связанные с проектами MysticRealities.
+        </p>
     </header>
 
     <div class="article-layout">
         <!-- ===== Основной текст ===== -->
-        <article class="article-body">
-            <!-- ===== ВИДЕО ===== -->
-            <section class="media-section" id="videos">
+        <article class="article-body" style="grid-column: 1 / -1;">
+            
+            <section class="media-section" id="videos" style="margin-top: 0; padding-top: 0; border-top: none;">
                 <div class="video-grid">
-                    <div class="video-caption">ХЕЛЛОУИН ТРЕЙЛЕР</div>
+
+                    <!-- КАРТОЧКА 1: Хеллоуин трейлер -->
                     <div class="video-item">
+                        <div class="video-caption" style="font-size: 14px; font-weight: bold; color: var(--text); padding: 12px 15px; border-bottom: 1px solid var(--border);">
+                            ХЕЛЛОУИН ТРЕЙЛЕР
+                        </div>
                         <video controls preload="metadata">
                             <source src="media/video/1118.mp4" type="video/mp4">
                             Ваш браузер не поддерживает видео.
                         </video>
                         <div class="video-caption">1 ноября 2024г</div>
                     </div>
+
+                    <!-- КАРТОЧКА 2 (Пример, как добавить ещё одно видео) -->
+                    
+                    <div class="video-item">
+                        <div class="video-caption" style="font-size: 14px; font-weight: bold; color: var(--text); padding: 12px 15px; border-bottom: 1px solid var(--border);">
+                            Театр Нарратора
+                        </div>
+                        <video controls preload="metadata">
+                            <source src="media/video/2_5194936508435422061.mp4" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>
+                        <div class="video-caption">20 ноября 2024г</div>
+                    </div>
+                    
+
                 </div>
             </section>
+
         </article>
-        </aside>
     </div>
 
 </main>
 
-<!-- Лайтбокс -->
+<!-- Лайтбокс (оставлен на случай, если захочешь добавить фото) -->
 <div class="lightbox" id="lightbox">
     <span class="lightbox-close" id="lightboxClose">×</span>
     <img src="" alt="" id="lightboxImg">
