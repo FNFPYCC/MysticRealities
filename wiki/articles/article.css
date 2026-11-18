@@ -312,3 +312,15 @@
         grid-template-columns: 1fr;
     }
 }
+
+.inline-row {
+    display: flex;
+    align-items: baseline; /* выравнивание по базовой линии текста */
+    gap: 6px;
+    flex-wrap: wrap; /* на узком экране перенесётся */
+}
+
+.inline-row h3,
+.inline-row p {
+    margin: 0;
+}

@@ -4,23 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MysticGuessr | MysticRealities</title>
+    <meta name="description" content="MysticGuessr — угадай координаты в 360° панораме мира MysticRealities.">
     <link rel="stylesheet" href="game.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
 <header class="topbar">
-    <a href="../../index.html" class="logo">Mystic<span>Realities</span></a>
-    <div class="game-name">MYSTICGUESSR</div>
+    <a href="../../index.html" class="logo">
+        MYSTIC<span>REALITIES</span>
+        <small>GUESSR</small>
+    </a>
+
     <div class="top-chips">
-        <div class="chip" id="roundInfo">Раунд 1 / 5</div>
+        <div class="chip" id="roundInfo">Раунд 1 / 15</div>
         <div class="chip chip-accent" id="scoreInfo">Очки: 0</div>
     </div>
 </header>
 
 <main class="game-layout">
     <section class="view-section">
-        <div id="panorama"><div id="loading" class="chip">Загрузка панорамы...</div></div>
+        <div id="panorama">
+            <div id="loading" class="chip">Загрузка панорамы...</div>
+        </div>
         <div class="view-help">Тяни мышью — осматриваться • колёсико — приближение</div>
         <div class="timer" id="timer">03:00</div>
     </section>
@@ -29,15 +35,16 @@
 <!-- Стартовый экран -->
 <div class="overlay" id="startScreen">
     <div class="card">
-        <div class="card-tag">MYSTICREALITIES</div>
-        <h1>MysticGuessr</h1>
-        <p>Осмотрись вокруг в 360° и поставь метку на карте там, где, по-твоему, ты находишься.
-           Чем ближе метка — тем больше очков.</p>
+        <div class="card-tag">MYSTICREALITIES PROJECT</div>
+        <h1>Mystic<em>Guessr</em></h1>
+        <p>Осмотрись вокруг в 360° и поставь метку на карте там, где, по-твоему, ты находишься. Чем ближе метка — тем больше очков.</p>
+
         <div class="card-stats">
-            <div><b id="roundsCount">5</b><span>раундов</span></div>
+            <div><b id="roundsCount">15</b><span>раундов</span></div>
             <div><b>3:00</b><span>на раунд</span></div>
             <div><b>5000</b><span>макс. за раунд</span></div>
         </div>
+
         <button id="startButton" class="primary big">Начать игру</button>
     </div>
 </div>
@@ -46,15 +53,15 @@
 <div class="map-widget" id="mapWidget">
     <div class="map-header">
         <div class="map-title">Карта мира <small>1 пиксель = 1 блок</small></div>
-        <button id="expandMapButton" class="icon-btn" title="Развернуть карту">⛶</button>
+        <button id="expandMapButton" class="icon-btn" title="Развернуть карту" aria-label="Развернуть карту">⛶</button>
     </div>
 
     <div class="map-canvas-wrapper">
         <canvas id="worldMap" width="2208" height="2208"></canvas>
         <div class="zoom-controls">
-            <button id="zoomInButton" class="icon-btn" title="Приблизить">+</button>
-            <button id="zoomOutButton" class="icon-btn" title="Отдалить">−</button>
-            <button id="resetMapButton" class="icon-btn" title="Сбросить вид">⌂</button>
+            <button id="zoomInButton" class="icon-btn" title="Приблизить" aria-label="Приблизить">+</button>
+            <button id="zoomOutButton" class="icon-btn" title="Отдалить" aria-label="Отдалить">−</button>
+            <button id="resetMapButton" class="icon-btn" title="Сбросить вид" aria-label="Сбросить вид">⌂</button>
         </div>
     </div>
 

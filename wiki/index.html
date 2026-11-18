@@ -44,13 +44,17 @@
         </a>
 
         <a href="#lore" class="side-link">
-            <span aria-hidden="true">◈</span> Лор и вселенные
+            <span aria-hidden="true">◈</span> Лор
         </a>
 
         <a href="#archive" class="side-link">
             <span aria-hidden="true">▤</span> Архив
         </a>
 
+        <a href="articles/video.html" class="side-link">
+            <span aria-hidden="true">▤</span> Видео
+        </a>
+        
         <div class="sidebar-bottom">
             <span class="status-dot" title="Статус: онлайн"></span>
             MysticRealities Wiki
@@ -81,11 +85,16 @@
                 </a>
             </div>
 
-            <div class="hero-decoration" aria-hidden="true">
+            <div class="hero-decoration">
                 <div class="circle circle-one"></div>
                 <div class="circle circle-two"></div>
                 <div class="circle circle-three"></div>
-                <span>MR</span>
+
+                <!-- Круглое фото: замени путь на своё -->
+                <img src="articles/media/logo.jpg"
+                    alt="MysticRealities"
+                    class="hero-photo"
+                    loading="lazy">
             </div>
         </section>
 
@@ -100,7 +109,7 @@
                 <input
                     type="search"
                     id="searchInput"
-                    placeholder="Например: Изидора, Minecraft, измерения..."
+                    placeholder="Например: Нарратор, Minecraft, ТАЙМ КИПЕР СКОЛЬКО У ТЕБЯ ОГУРЦЫ В ЖОПЕ?"
                     aria-label="Поиск по энциклопедии"
                 >
             </div>
@@ -144,7 +153,7 @@
                 <a href="#lore" class="category-card" id="lore">
                     <div class="category-icon" aria-hidden="true">◈</div>
                     <span class="category-tag">LORE</span>
-                    <h3>Лор и вселенные</h3>
+                    <h3>Лор</h3>
                     <p>
                         Истории, события, измерения,
                         фракции и хронология.
@@ -177,71 +186,27 @@
 
             <div class="article-list" id="articleList">
 
-                <a href="articles/isidora.html" class="article-card"
-                   data-title="Изидора Isidora Lumenfall персонаж">
-                    <div class="article-symbol" aria-hidden="true">♙</div>
+                <a href="articles/tl.html" class="article-card"
+                   data-title="_TL_">
+                    <img src="articles/media/t_l.png"alt="Изидора"class="article-symbol-img">
                     <div class="article-info">
                         <span>ПЕРСОНАЖИ</span>
-                        <h3>Изидора (Isidora Lumenfall)</h3>
-                        <p>Информация о персонаже и её истории.</p>
+                        <h3>TL</h3>
+                        <p>Прототип.</p>
                     </div>
                     <span class="article-arrow" aria-hidden="true">→</span>
                 </a>
 
-                <a href="articles/elirion.html" class="article-card"
-                   data-title="Элирион Питара Кикс Elirion Pythara Kix">
-                    <div class="article-symbol" aria-hidden="true">♙</div>
-                    <div class="article-info">
-                        <span>ПЕРСОНАЖИ</span>
-                        <h3>Элирион Питара Кикс</h3>
-                        <p>Старший брат Изидоры и его история.</p>
-                    </div>
-                    <span class="article-arrow" aria-hidden="true">→</span>
-                </a>
-
-                <a href="articles/nova.html" class="article-card"
-                   data-title="Нова Nova Catfall робот персонаж">
-                    <div class="article-symbol" aria-hidden="true">♙</div>
-                    <div class="article-info">
-                        <span>ПЕРСОНАЖИ</span>
-                        <h3>Нова Кэтфолл</h3>
-                        <p>Персонаж, её особенности и способности.</p>
-                    </div>
-                    <span class="article-arrow" aria-hidden="true">→</span>
-                </a>
-
-                <a href="articles/black-cats.html" class="article-card"
-                   data-title="Чёрные Коты Полной Луны команда">
+                <a href="articles/video.html" class="article-card"
+                   data-title="Видео архив">
                     <div class="article-symbol" aria-hidden="true">◈</div>
                     <div class="article-info">
-                        <span>ВСЕЛЕННЫЕ</span>
-                        <h3>Чёрные Коты Полной Луны</h3>
-                        <p>История команды и её участников.</p>
+                        <span>ЛОР</span>
+                        <h3>Все видео из мистика</h3>
                     </div>
                     <span class="article-arrow" aria-hidden="true">→</span>
                 </a>
-
-                <a href="articles/minecraft.html" class="article-card"
-                   data-title="Minecraft моды миры проекты">
-                    <div class="article-symbol" aria-hidden="true">▦</div>
-                    <div class="article-info">
-                        <span>MINECRAFT</span>
-                        <h3>Minecraft — проекты</h3>
-                        <p>Игровые проекты и разработки.</p>
-                    </div>
-                    <span class="article-arrow" aria-hidden="true">→</span>
-                </a>
-
-                <a href="articles/viron.html" class="article-card"
-                   data-title="Вирон Firebyte инженер механик">
-                    <div class="article-symbol" aria-hidden="true">♙</div>
-                    <div class="article-info">
-                        <span>ПЕРСОНАЖИ</span>
-                        <h3>Вирон Файрбайт</h3>
-                        <p>Инженер, механик и создатель роботов.</p>
-                    </div>
-                    <span class="article-arrow" aria-hidden="true">→</span>
-                </a>
+                
 
             </div>
 
