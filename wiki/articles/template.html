@@ -22,6 +22,8 @@
         <a href="../index.html">Главная сайта</a>
         <a href="../index.html#categories">Категории</a>
         <a href="../index.html#articles">Статьи</a>
+        <!-- Кнопка входа -->
+        <button id="loginBtn" class="login-btn">Войти</button>
     </nav>
 </header>
 
@@ -101,13 +103,6 @@
                         <figcaption>Подпись к фото 2</figcaption>
                     </figure>
 
-                    <figure>
-                        <img src="media/example3.jpg"
-                             alt="Описание фото 3"
-                             loading="lazy">
-                        <figcaption>Подпись к фото 3</figcaption>
-                    </figure>
-
                 </div>
             </section>
 
@@ -126,15 +121,6 @@
                             loading="lazy">
                         </iframe>
                         <div class="video-caption">Подпись к видео</div>
-                    </div>
-
-                    <!-- Локальный видеофайл из media/ -->
-                    <div class="video-item">
-                        <video controls preload="metadata">
-                            <source src="media/example-video.mp4" type="video/mp4">
-                            Ваш браузер не поддерживает видео.
-                        </video>
-                        <div class="video-caption">Локальное видео</div>
                     </div>
 
                 </div>
@@ -169,14 +155,38 @@
 
 </main>
 
+<!-- БЛОК КОММЕНТАРИЕВ GISCUS -->
+<div class="comments-section">
+    <h2>Комментарии</h2>
+    
+    <script src="https://giscus.app/client.js"
+            data-repo="FNFPYCC/MysticRealities"
+            data-repo-id="R_kgDOVtfCDA"
+            data-category="Comments"
+            data-category-id="DIC_kwDOVtfCDM4DLg8e"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="dark"
+            data-lang="ru"
+            crossorigin="anonymous"
+            async>
+    </script>
+</div>
+
 <!-- Лайтбокс -->
 <div class="lightbox" id="lightbox">
     <span class="lightbox-close" id="lightboxClose">×</span>
     <img src="" alt="" id="lightboxImg">
 </div>
 
+<!-- ПОДКЛЮЧАЕМ ОБЩИЙ СКРИПТ (для входа через GitHub) -->
+<script src="../script.js"></script>
+
+<!-- Скрипт для лайтбокса -->
 <script>
-/* Лайтбокс для галереи */
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightboxImg");
 const lightboxClose = document.getElementById("lightboxClose");

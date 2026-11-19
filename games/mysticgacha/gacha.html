@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мистик Гача — MysticRealities</title>
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="gacha.css">
+</head>
+<body>
+
+<header class="header">
+    <a href="../../index.html" class="logo">MYSTIC<span>REALITIES</span></a>
+    <nav>
+        <a href="../../index.html">Главная сайта</a>
+        <a href="gacha.html" style="color: var(--bright); font-weight: bold;">Гача</a>
+        <button id="loginBtn" class="login-btn">Войти</button>
+    </nav>
+</header>
+
+<main class="gacha-container">
+    
+    <div class="top-bar">
+        <div class="currency"><span id="moneyCount">0</span> 🪙</div>
+        <div class="currency">Доход через: <span id="incomeTimer" style="color: var(--bright); font-weight: bold;">60</span> сек.</div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('roll', this)">Крутка</button>
+        <button class="tab-btn" onclick="switchTab('inventory', this)">Инвентарь</button>
+        <button class="tab-btn" onclick="switchTab('characters', this)">Персонажи</button>
+    </div>
+
+    <!-- Вкладка: Крутка -->
+    <div id="tab-roll" class="tab-content">
+        <div class="gacha-stage">
+            <div class="gacha-card hidden" id="resultCard">
+                <img id="resultImage" src="" alt="Предмет">
+                <h2 id="resultName">Название</h2>
+                <span id="resultRarity">Редкость</span>
+            </div>
+            <div class="gacha-placeholder" id="gachaPlaceholder">
+                Нажми кнопку, чтобы испытать удачу!
+            </div>
+        </div>
+        
+        <div class="pity-info">
+            До гаранта: <span id="pityDisplay">0</span> / 90
+            <span id="guaranteeStatus" style="color: #f5a623;"></span>
+        </div>
+
+        <div class="gacha-controls">
+            <button id="roll1Btn" class="hero-button">Крутить x1 (160 🪙)</button>
+            <button id="roll10Btn" class="hero-button">Крутить x10 (1600 🪙)</button>
+        </div>
+    </div>
+
+    <!-- Вкладка: Инвентарь -->
+    <div id="tab-inventory" class="tab-content hidden">
+        <h2>Диски и Материалы</h2>
+        <div class="inventory-grid" id="inventoryGrid"></div>
+    </div>
+
+    <!-- Вкладка: Персонажи -->
+    <div id="tab-characters" class="tab-content hidden">
+        <h2>Твоя команда</h2>
+        <div class="team-slots" id="teamSlots"></div>
+        <h3>Список персонажей</h3>
+        <div class="character-list" id="characterList"></div>
+    </div>
+
+    <!-- Модальное окно профиля -->
+    <div id="charModal" class="modal-overlay hidden">
+        <div class="char-modal-content">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <div class="char-profile">
+                <div class="char-art">
+                    <img id="modalCharImg" src="" alt="Character">
+                    <div class="mindscape-btn" onclick="showMindscape()">
+                        <span>Разум</span>
+                        <div class="mindscape-level" id="modalMindscapeLevel">0/6</div>
+                    </div>
+                </div>
+                <div class="char-stats">
+                    <h1 id="modalCharName">Имя</h1>
+                    <p class="char-rarity" id="modalCharRarity">S-RANK</p>
+                    <div class="stat-box">
+                        <div class="stat-row"><span>Уровень:</span> <b>1 / 10</b></div>
+                        <div class="stat-row"><span>Доход:</span> <b id="modalCharIncome">+50 🪙</b></div>
+                        <div class="stat-row"><span>Копии:</span> <b id="modalCharCopies">x1</b></div>
+                    </div>
+                    <h3>Экипировка (Диски)</h3>
+                    <div class="equipment-slots">
+                        <!-- Добавлен onclick для дисков -->
+                        <div class="eq-slot" onclick="alert('Слот для диска 1. Пока пуст.')">1</div>
+                        <div class="eq-slot" onclick="alert('Слот для диска 2. Пока пуст.')">2</div>
+                        <div class="eq-slot" onclick="alert('Слот для диска 3. Пока пуст.')">3</div>
+                        <div class="eq-slot" onclick="alert('Слот для диска 4. Пока пуст.')">4</div>
+                        <div class="eq-slot" onclick="alert('Слот для диска 5. Пока пуст.')">5</div>
+                        <div class="eq-slot" onclick="alert('Слот для диска 6. Пока пуст.')">6</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script src="../../script.js"></script>
+<script src="gacha.js"></script>
+</body>
+</html>
