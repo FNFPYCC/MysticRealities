@@ -21,6 +21,8 @@
         <a href="../index.html">Главная сайта</a>
         <a href="../index.html#categories">Категории</a>
         <a href="../index.html#articles">Статьи</a>
+        <!-- Добавлена кнопка входа -->
+        <button id="loginBtn" class="login-btn">Войти</button>
     </nav>
 </header>
 
@@ -63,8 +65,7 @@
                         <div class="video-caption">1 ноября 2024г</div>
                     </div>
 
-                    <!-- КАРТОЧКА 2 (Пример, как добавить ещё одно видео) -->
-                    
+                    <!-- КАРТОЧКА 2 -->
                     <div class="video-item">
                         <div class="video-caption" style="font-size: 14px; font-weight: bold; color: var(--text); padding: 12px 15px; border-bottom: 1px solid var(--border);">
                             Театр Нарратора
@@ -76,7 +77,6 @@
                         <div class="video-caption">20 ноября 2024г</div>
                     </div>
                     
-
                 </div>
             </section>
 
@@ -85,11 +85,36 @@
 
 </main>
 
+<!-- БЛОК КОММЕНТАРИЕВ -->
+<div class="comments-section">
+    <h2>Комментарии</h2>
+    
+    <!-- КОД GISCUS (вставь свои данные, если они отличаются) -->
+    <script src="https://giscus.app/client.js"
+            data-repo="FNFPYCC/MysticRealities"
+            data-repo-id="R_kgDO..."
+            data-category="General"
+            data-category-id="DIC_kwDO..."
+            data-mapping="pathname"
+            data-strict="1"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="dark"
+            data-lang="ru"
+            crossorigin="anonymous"
+            async>
+    </script>
+</div>
+
 <!-- Лайтбокс (оставлен на случай, если захочешь добавить фото) -->
 <div class="lightbox" id="lightbox">
     <span class="lightbox-close" id="lightboxClose">×</span>
     <img src="" alt="" id="lightboxImg">
 </div>
+
+<!-- ПОДКЛЮЧАЕМ ОБЩИЙ СКРИПТ (для входа через GitHub) -->
+<script src="../script.js"></script>
 
 <script>
 /* Лайтбокс для галереи */

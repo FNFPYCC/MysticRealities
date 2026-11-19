@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактор — MysticRealities Wiki</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+    <a href="index.html" class="logo">MYSTIC<span>REALITIES</span> <small>WIKI</small></a>
+    <nav>
+        <a href="index.html">Главная сайта</a>
+        <button id="loginBtn" class="login-btn">Войти</button>
+    </nav>
+</header>
+
+<div class="layout">
+    <main class="main" style="padding: 40px 7%;">
+        <h2>Редактор статей</h2>
+        <p style="color: var(--muted); margin-bottom: 20px;">Страница доступна только администраторам.</p>
+
+        <!-- Форма редактора -->
+        <div id="editorArea" style="display: none;">
+            <div style="margin-bottom: 15px;">
+                <label style="display:block; margin-bottom:5px;">Путь к файлу (например: articles/tl.html):</label>
+                <input type="text" id="filePath" style="width: 100%; padding: 10px; background: var(--panel); border: 1px solid var(--border); color: white; border-radius: 5px;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display:block; margin-bottom:5px;">Содержимое статьи (HTML):</label>
+                <textarea id="fileContent" rows="20" style="width: 100%; padding: 10px; background: var(--panel); border: 1px solid var(--border); color: white; border-radius: 5px; font-family: monospace;"></textarea>
+            </div>
+            <button id="saveBtn" class="hero-button">Сохранить изменения</button>
+            <span id="statusMsg" style="margin-left: 15px; color: var(--good);"></span>
+        </div>
+
+        <div id="accessDenied" style="color: var(--muted);">
+            <p>У вас нет прав на редактирование. Введите ваш Personal Access Token для входа в режим редактирования.</p>
+            <input type="password" id="patInput" placeholder="Вставьте сюда ваш токен (github_pat_...)" style="width: 100%; max-width: 400px; padding: 10px; margin-top: 10px; background: var(--panel); border: 1px solid var(--border); color: white; border-radius: 5px;">
+            <button id="authBtn" class="hero-button" style="margin-top: 10px;">Авторизоваться как Админ</button>
+        </div>
+    </main>
+</div>
+
+<script>
+const REPO_OWNER = "FNFPYCC";
+const REPO_NAME = "MysticRealities";
+
+const patInput = document.getElementById('patInput');
+const authBtn = document.getElementById('authBtn');
+const editorArea = document.getElementById('editorArea');
+const accessDenied = document.getElementById('accessDenied');
+const filePathInput = document.getElementById('filePath');
+const fileContentInput = document.getElementById('fileContent');
+const saveBtn = document.getElementById('saveBtn');
+const statusMsg = document.getElementById('statusMsg');
+
+let adminToken = localStorage.getItem('admin_pat');
+
+// Проверка токена при загрузке
+if (adminToken) {
+    editorArea.style.display = 'block';
+    accessDenied.style.display = 'none';
+}
+
+// Авторизация по токену
+authBtn.addEventListener('click', () => {
+    const token = patInput.value.trim();
+    if (token) {
+        localStorage.setItem('admin_pat', token);
+        editorArea.style.display = 'block';
+        accessDenied.style.display = 'none';
+        alert("Режим администратора включён!");
+    }
+});
+
+// Получение файла из GitHub
+filePathInput.addEventListener('blur', async () => {
+    const path = filePathInput.value.trim();
+    if (!path) return;
+
+    statusMsg.textContent = "Загрузка файла...";
+    statusMsg.style.color = "var(--muted)";
+
+    try {
+        const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+            headers: { 'Authorization': `token ${adminToken}` }
+        });
+        
+        if (!response.ok) throw new Error("Файл не найден");
+        
+        const data = await response.json();
+        // Декодируем Base64 в текст
+        fileContentInput.value = decodeURIComponent(escape(atob(data.content)));
+        statusMsg.textContent = "Файл загружен.";
+        statusMsg.style.color = "var(--good)";
+    } catch (error) {
+        statusMsg.textContent = "Ошибка: " + error.message;
+        statusMsg.style.color = "var(--red)";
+    }
+});
+
+// Сохранение файла в GitHub
+saveBtn.addEventListener('click', async () => {
+    const path = filePathInput.value.trim();
+    const content = fileContentInput.value;
+    
+    if (!path || !content) {
+        alert("Заполните путь и содержимое!");
+        return;
+    }
+
+    statusMsg.textContent = "Сохранение...";
+    statusMsg.style.color = "var(--muted)";
+
+    try {
+        // 1. Получаем SHA текущего файла (обязательно для обновления)
+        const getResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+            headers: { 'Authorization': `token ${adminToken}` }
+        });
+        
+        let sha = null;
+        if (getResponse.ok) {
+            const data = await getResponse.json();
+            sha = data.sha;
+        }
+
+        // 2. Кодируем текст обратно в Base64
+        const encodedContent = btoa(unescape(encodeURIComponent(content)));
+
+        // 3. Отправляем запрос на обновление
+        const updateResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${adminToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Обновление статьи: ${path}`,
+                content: encodedContent,
+                sha: sha // Если файл новый, sha будет null
+            })
+        });
+
+        if (updateResponse.ok) {
+            statusMsg.textContent = "Успешно сохранено! Обновится через минуту.";
+            statusMsg.style.color = "var(--good)";
+        } else {
+            const err = await updateResponse.json();
+            throw new Error(err.message);
+        }
+    } catch (error) {
+        statusMsg.textContent = "Ошибка: " + error.message;
+        statusMsg.style.color = "var(--red)";
+    }
+});
+</script>
+</body>
+</html>

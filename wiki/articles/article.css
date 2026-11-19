@@ -324,3 +324,16 @@
 .inline-row p {
     margin: 0;
 }
+
+.comments-section {
+    max-width: 1100px;
+    margin: 40px auto 80px;
+    padding: 0 7%;
+}
+
+.comments-section h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    padding-left: 12px;
+    border-left: 3px solid var(--bright);
+}
