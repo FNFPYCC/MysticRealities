@@ -43,16 +43,9 @@ a { color: inherit; text-decoration: none; }
     z-index: 5;
 }
 
-.logo {
-    font-size: 19px;
-    font-weight: 900;
-    letter-spacing: 1px;
-    display: flex;
-    align-items: baseline;
-    gap: 7px;
-}
 
-.logo span { color: var(--bright); }
+.logo { font-size: 19px; font-weight: 900; letter-spacing: 1px; }
+.logo span, .red { color: var(--bright); }
 
 .logo small {
     color: var(--muted);
