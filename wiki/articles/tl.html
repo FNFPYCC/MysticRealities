@@ -21,6 +21,7 @@
         <a href="../index.html">Главная сайта</a>
         <a href="../index.html#categories">Категории</a>
         <a href="../index.html#articles">Статьи</a>
+        <!-- Кнопка входа -->
         <button id="loginBtn" class="login-btn">Войти</button>
     </nav>
 </header>
@@ -165,19 +166,17 @@
 
 </main>
 
-<!-- БЛОК КОММЕНТАРИЕВ -->
+<!-- БЛОК КОММЕНТАРИЕВ GISCUS -->
 <div class="comments-section">
     <h2>Комментарии</h2>
     
-    <!-- ВСТАВЬ СЮДА КОД ИЗ GISCUS.APP -->
-    <!-- Пример (замени data-repo-id и data-category-id на свои): -->
     <script src="https://giscus.app/client.js"
             data-repo="FNFPYCC/MysticRealities"
-            data-repo-id="R_kgDO..."
-            data-category="General"
-            data-category-id="DIC_kwDO..."
+            data-repo-id="R_kgDOVtfCDA"
+            data-category="Comments"
+            data-category-id="DIC_kwDOVtfCDM4DLg8e"
             data-mapping="pathname"
-            data-strict="1"
+            data-strict="0"
             data-reactions-enabled="1"
             data-emit-metadata="0"
             data-input-position="bottom"
@@ -194,10 +193,11 @@
     <img src="" alt="" id="lightboxImg">
 </div>
 
-<!-- СКРИПТЫ -->
-<script src="../script.js"></script> <!-- Подключаем общий скрипт входа и меню -->
+<!-- ПОДКЛЮЧАЕМ ОБЩИЙ СКРИПТ (для входа через GitHub) -->
+<script src="../script.js"></script>
+
+<!-- Скрипт для лайтбокса -->
 <script>
-/* Лайтбокс для галереи */
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightboxImg");
 const lightboxClose = document.getElementById("lightboxClose");
