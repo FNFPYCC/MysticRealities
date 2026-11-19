@@ -59,12 +59,27 @@ document.addEventListener("DOMContentLoaded", () => {
 // ==========================================
 // 3. АВТОРИЗАЦИЯ ЧЕРЕЗ GITHUB
 // ==========================================
+// ... (твой код поиска и меню) ...
+
 const AUTH_WORKER_URL = 'https://mystic-auth.igoredisan974.workers.dev';
 const loginBtn = document.getElementById('loginBtn');
 
+// Принимаем токен, который прилетит от Cloudflare
+window.addEventListener('message', (event) => {
+    // Разрешаем прием сообщений от нашего Worker
+    if (event.origin === AUTH_WORKER_URL && event.data.type === 'github-auth-success') {
+        if (event.data.token) {
+            // Сохраняем токен в память браузера
+            localStorage.setItem('github_token', event.data.token);
+            // Обновляем кнопку
+            checkLogin();
+        }
+    }
+});
+
 async function checkLogin() {
     const token = localStorage.getItem('github_token');
-    if (!loginBtn) return; // Если кнопки нет на странице — выходим
+    if (!loginBtn) return;
 
     if (token) {
         try {
@@ -77,39 +92,29 @@ async function checkLogin() {
                 loginBtn.textContent = `Выйти (${user.login})`;
                 loginBtn.classList.add('logged-in');
                 loginBtn.onclick = logout;
+                return;
             }
         } catch (error) {
             console.error("Ошибка токена", error);
-            logout();
         }
-    } else {
-        loginBtn.textContent = 'Войти';
-        loginBtn.classList.remove('logged-in');
-        loginBtn.onclick = login;
     }
+    
+    // Если токена нет или он невалиден
+    loginBtn.textContent = 'Войти';
+    loginBtn.classList.remove('logged-in');
+    loginBtn.onclick = login;
 }
 
 function login() {
     const width = 600, height = 700;
     const left = (screen.width / 2) - (width / 2);
     const top = (screen.height / 2) - (height / 2);
-    
-    window.open(
-        AUTH_WORKER_URL, 
-        'GitHub Login', 
-        `width=${width},height=${height},top=${top},left=${left}`
-    );
+    window.open(AUTH_WORKER_URL, 'GitHub Login', `width=${width},height=${height},top=${top},left=${left}`);
 }
 
 function logout() {
     localStorage.removeItem('github_token');
     checkLogin();
 }
-
-window.addEventListener('message', (event) => {
-    if (event.origin === AUTH_WORKER_URL && event.data.type === 'github-auth-success') {
-        checkLogin();
-    }
-});
 
 document.addEventListener("DOMContentLoaded", checkLogin);
