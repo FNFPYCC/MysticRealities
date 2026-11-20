@@ -21,6 +21,8 @@
     <div class="top-bar">
         <div class="currency"><span id="moneyCount">0</span> ⬡ <small>полихромы</small></div>
         <div class="currency">Доход: <span id="incomeRate">+0/мин</span> • через <span id="incomeTimer">--</span></div>
+        <div class="currency" id="profileBar">👤 <b id="profName">—</b> <span class="cloud" id="cloudState"></span>
+            <button class="mini" id="profSwitch">Выйти</button><button class="mini" id="saveExport">Экспорт</button><button class="mini" id="saveImport">Импорт</button></div>
     </div>
 
     <div class="tabs">
@@ -33,13 +35,27 @@
 
     <!-- СИГНАЛЫ -->
     <div id="tab-roll" class="tab-content">
-        <div class="banner-select" id="bannerSelect"></div>
-        <div class="banner-info" id="bannerInfo"></div>
-        <div class="gacha-stage" id="stage"><div class="gacha-placeholder">Выбери канал и запусти сигнал!</div></div>
-        <div class="pity-info" id="pityInfo"></div>
-        <div class="gacha-controls">
-            <button id="roll1Btn" class="hero-button">Сигнал ×1 (160 ⬡)</button>
-            <button id="roll10Btn" class="hero-button">Сигнал ×10 (1600 ⬡)</button>
+        <div class="sig-screen">
+            <div class="sig-side" id="sigSide"></div>
+            <div class="sig-stage" id="sigStage">
+                <img class="sig-char" id="sigChar" alt="">
+                <div class="cur-chips sig-cur" id="sigCur"></div>
+                <div class="sig-info">
+                    <h2 id="sigTitle"></h2>
+                    <div class="sig-time" id="sigTime"></div>
+                    <div class="sig-blurb" id="sigText"></div>
+                </div>
+                <div class="sig-name" id="sigName"></div>
+                <div class="sig-a" id="sigA"></div>
+                <div class="sig-pity" id="sigPity"></div>
+            </div>
+            <div class="sig-bottom">
+                <button class="pill" id="sigRegistry">✦ Реестр сигналов</button>
+                <button class="pill" id="sigDetails">Подробности</button>
+                <span class="grow"></span>
+                <div class="pull-btn"><span class="tk" id="tk1"></span><button class="pill gold" id="roll1Btn">1 поиск сигнала</button></div>
+                <div class="pull-btn"><span class="tk" id="tk10"></span><button class="pill gold" id="roll10Btn">10 поисков сигнала</button></div>
+            </div>
         </div>
     </div>
 
@@ -101,6 +117,11 @@
                     <div class="skill-row" id="skillRow"></div>
                 </div>
 
+                <div id="modal-tab-equip" class="hidden">
+                    <div class="ring" id="viewRing"></div>
+                    <div class="set-bonuses view-notes" id="viewNotes"></div>
+                </div>
+
                 <div id="modal-tab-mind" class="hidden">
                     <div class="muted" id="mindInfo" style="margin-bottom: 12px;"></div>
                     <div class="mind-list" id="mindList"></div>
@@ -148,6 +169,36 @@
     </div>
 </div>
 
+<!-- РЕЗУЛЬТАТЫ ПОИСКА -->
+<div id="resultScreen" class="res-screen hidden">
+    <div class="res-title">Результаты поиска</div>
+    <div class="res-grid" id="resGrid"></div>
+    <div class="res-confirm"><span><i>◈</i> <b id="resEcho">0</b></span><button id="resOk">Подтвердить</button></div>
+    <div class="muted">Нажмите на любое место, чтобы закрыть</div>
+</div>
+
+<!-- МАГАЗИН «РЕЕСТР СИГНАЛОВ» -->
+<div id="shopScreen" class="shop-screen hidden">
+    <div class="shop-top"><button id="shopBack" class="eq-back">⮌ Назад</button><span class="grow"></span><div class="cur-chips" id="shopCur"></div></div>
+    <div class="shop-tabs" id="shopTabs"></div>
+    <div class="shop-grid" id="shopGrid"></div>
+</div>
+
+<!-- ПОДРОБНОСТИ КАНАЛА -->
+<div id="detailsScreen" class="pop hidden"><div class="pop-card">
+    <div id="detailsBody"></div>
+    <button class="hero-button" id="detailsClose" style="width:100%;margin-top:16px">Закрыть</button>
+</div></div>
+
+<!-- ВХОД ТОЛЬКО ЧЕРЕЗ GITHUB -->
+<div id="loginScreen" class="pop"><div class="pop-card" style="text-align:center">
+    <h2>Вход через GitHub</h2>
+    <p class="muted" id="loginMsg">Проверяем вход…</p>
+    <button class="hero-button" id="ghBtn" style="width:100%;display:none">Войти через GitHub</button>
+</div></div>
+
+<script src="gacha-data.js"></script>
+<script src="gacha-auth.js"></script>
 <script src="gacha.js"></script>
 </body>
 </html>

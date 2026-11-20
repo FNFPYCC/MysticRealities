@@ -1,95 +1,40 @@
 "use strict";
-// ==========================================
-// 1. ДАННЫЕ (меняй имена и добавляй свои предметы здесь)
-// ==========================================
-const SHAPES = {
-    agent: "<circle cx='50' cy='40' r='20' fill='C'/><rect x='20' y='65' width='60' height='30' rx='10' fill='C'/>",
-    weapon: "<rect x='44' y='8' width='12' height='62' rx='4' fill='C'/><rect x='28' y='66' width='44' height='10' rx='3' fill='C'/><rect x='45' y='76' width='10' height='16' fill='C'/>",
-    disk: "<circle cx='50' cy='50' r='40' fill='none' stroke='C' stroke-width='6'/><circle cx='50' cy='50' r='11' fill='C'/>"
-};
-const RANK_COLOR = { S: "#f5a623", A: "#b84cf0", B: "#4a90e2" };
-const art = (type, rank) => "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='#120a0c'/>${SHAPES[type].replace(/C/g, RANK_COLOR[rank])}</svg>`);
-
-// image можно заменить на свой путь: image: "../../assets/gacha/lim_1.png"
-const ITEMS = [
-    { id: "lim_1", name: "Лимитированный", rarity: "S", type: "agent", income: 100 },
-    { id: "std_1", name: "Time Lord (TL)", rarity: "S", type: "agent", income: 50 },
-    { id: "std_2", name: "Стандартный S-2", rarity: "S", type: "agent", income: 50 },
-    { id: "a_1", name: "Прототип TL", rarity: "A", type: "agent", income: 20 },
-    { id: "a_2", name: "Агент A-2", rarity: "A", type: "agent", income: 20 },
-    { id: "we_lim", name: "Лимитированный W-двигатель", rarity: "S", type: "weapon", atk: 713, sub: ["cd", 48], eff: ["atk%", 10] },
-    { id: "we_std", name: "Стандартный W-двигатель", rarity: "S", type: "weapon", atk: 713, sub: ["cr", 24], eff: ["atk%", 8] },
-    { id: "we_a", name: "W-двигатель A", rarity: "A", type: "weapon", atk: 594, sub: ["atk%", 18], eff: ["cd", 8] },
-    { id: "we_b", name: "W-двигатель B", rarity: "B", type: "weapon", atk: 400, sub: ["hp%", 15], eff: ["def%", 6] },
-    { id: "disk_1", name: "Диск: Атака", rarity: "B", type: "disk", set: "fury", main: ["atk", 60] },
-    { id: "disk_2", name: "Диск: Бастион", rarity: "B", type: "disk", set: "bastion", main: ["hp", 400] },
-    { id: "disk_3", name: "Диск: Остриё", rarity: "B", type: "disk", set: "sharp", main: ["cr", 2.4] }
-].map((i) => ({ image: art(i.type, i.rarity), ...i }));
-
-const AGENT_INFO = {
-    lim_1: { faction: "Мистик Реалм", elem: "Огонь", role: "Атака", impact: 120, ap: 95, am: 105, er: 1.2 },
-    std_1: { faction: "Мистик Реалм", elem: "Физ.", role: "Аномалия", impact: 95, ap: 120, am: 110, er: 1.2 },
-    std_2: { faction: "Мистик Реалм", elem: "Лёд", role: "Поддержка", impact: 80, ap: 90, am: 90, er: 1.4 },
-    a_1: { faction: "Мистик Реалм", elem: "Физ.", role: "Аномалия", impact: 86, ap: 116, am: 118, er: 1.2 },
-    a_2: { faction: "Мистик Реалм", elem: "Электро", role: "Атака", impact: 100, ap: 90, am: 90, er: 1.2 }
-};
-const info = (id) => Object.assign({ faction: "—", elem: "Физ.", role: "Атака", impact: 100, ap: 90, am: 90, er: 1.2 }, AGENT_INFO[id]);
-
-// Навыки: ядро A–F и 5 навыков до 12 уровня (лимит растёт от Разума)
-const SKILLS = [
-    { name: "Базовая атака", icon: "✊" }, { name: "Уклонение", icon: "⮝" }, { name: "Поддержка", icon: "⇄" },
-    { name: "Особая атака", icon: "✦" }, { name: "Цепная атака", icon: "☄" }
-];
-const CORE_LETTERS = "ABCDEF";
-// Разум (Ментальная картина): открывается дубликатами агента, M1..M6
-const MINDS = [
-    { name: "Разминка", desc: "АТК +6%", fx: [["atk%", 6]] },
-    { name: "Состояние потока", desc: "Крит. шанс +4%", fx: [["cr", 4]] },
-    { name: "Всесторонние тренировки", desc: "Лимит уровня навыков +2", cap: true },
-    { name: "Зажигаем вместе!", desc: "HP +10%", fx: [["hp%", 10]] },
-    { name: "Мастер на все руки", desc: "Лимит уровня навыков +2", cap: true },
-    { name: "Выход за пределы", desc: "Крит. урон +20%, АТК +10%", fx: [["cd", 20], ["atk%", 10]] }
-];
-
+// Движок гачи. Контент (агенты, двигатели, диски, баннеры, магазин) лежит в gacha-data.js
 const STAT_NAMES = { hp: "HP", atk: "АТК", def: "ЗАЩ", cr: "Крит. шанс", cd: "Крит. урон" };
-const SETS = {
-    fury: { name: "Ярость", b2: ["atk%", 10], b4: ["cr", 12] },
-    bastion: { name: "Бастион", b2: ["hp%", 10], b4: ["def%", 25] },
-    sharp: { name: "Острие", b2: ["cr", 8], b4: ["cd", 30] }
-};
 const BASE = { S: [8000, 900, 650], A: [6800, 750, 550] };
-
-// Каналы как в ZZZ: мягкий гарант растёт на 6% за крутку, жёсткий гарант S,
-// гарант A каждые 10 круток, 50/50 (у W-двигателей 75/25)
-const BANNERS = {
-    excl: { name: "Эксклюзивный канал", kind: "агент", s: 0.006, soft: 74, hard: 90, a: 0.094, upS: 0.5, upA: 0.5,
-        featS: ["lim_1"], featA: ["a_2"], poolS: ["std_1", "std_2"], poolA: ["a_1", "a_2"], poolB: ["disk_1", "disk_2", "disk_3"] },
-    std: { name: "Стандартный канал", kind: "агент", s: 0.006, soft: 74, hard: 90, a: 0.094, upS: 0, upA: 0,
-        featS: [], featA: [], poolS: ["std_1", "std_2"], poolA: ["a_1", "a_2"], poolB: ["disk_1", "disk_2", "disk_3"] },
-    weapon: { name: "Канал W-двигателей", kind: "W-двигатель", s: 0.01, soft: 65, hard: 80, a: 0.15, upS: 0.75, upA: 0.75,
-        featS: ["we_lim"], featA: ["we_a"], poolS: ["we_lim", "we_std"], poolA: ["we_a"], poolB: ["we_b"] }
+const CORE_LETTERS = "ABCDEF";
+// Правила каналов как в ZZZ: мягкий гарант +6% за попытку, жёсткий гарант S, гарант A раз в 10 попыток, 50/50 (у двигателей 75/25)
+const RULES = {
+    excl: { kind: "agent", ticket: "master", s: 0.006, soft: 74, hard: 90, a: 0.094, upS: 0.5, upA: 0.5 },
+    std: { kind: "agent", ticket: "encrypted", s: 0.006, soft: 74, hard: 90, a: 0.094, upS: 0, upA: 0 },
+    weapon: { kind: "weapon", ticket: "master", s: 0.01, soft: 65, hard: 80, a: 0.15, upS: 0.75, upA: 0.75 }
 };
-const PULL_COST = 160, TEAM_SIZE = 3, MAX_COPIES = { agent: 7, weapon: 5 }, SOFT_STEP = 0.06;
+const TAPE_PRICE = 160, MAX_COPIES = { agent: 7 }, SOFT_STEP = 0.06;
+const MAX_LV = { weapon: 60, disk: 15 }, LV_STEP = { weapon: 0.02, disk: 0.08 };
 
 // ==========================================
-// 2. СОСТОЯНИЕ
+// СОСТОЯНИЕ И ПРОФИЛИ
 // ==========================================
-const KEY = "gacha_zzz_v3";
+const KEY = "gacha_zzz_v5";
 const freshCh = () => ({ pity: 0, aPity: 0, gS: false, gA: false });
-const fresh = () => ({ money: 1600, ch: { excl: freshCh(), std: freshCh(), weapon: freshCh() },
-    inv: {}, levels: {}, team: [null, null, null], equip: {}, itemLv: {}, seen: {}, skills: {}, history: [], last: Date.now() });
-let state = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY) || "null"));
-let curBanner = "excl", currentCharId = null, eqSlot = "w", eqItem = null, eqFilter = "all";
+const fresh = () => ({ money: 1600, master: 5, encrypted: 3, echo: 0, ch: { excl: freshCh(), std: freshCh(), weapon: freshCh() },
+    inv: {}, levels: {}, team: [null, null, null], equip: {}, gear: [], nextUid: 1, seen: {}, skills: {}, history: [],
+    bought: {}, boughtMonth: "", last: Date.now(), savedAt: 0 });
+let state = fresh(), profile = null;
+let curId = BANNERS[0].id, curTab = "roll", currentCharId = null, eqSlot = "w", eqItem = null, eqFilter = "all";
 
 const $ = (id) => document.getElementById(id);
 const ITEM = (id) => ITEMS.find((i) => i.id === id);
-const save = () => localStorage.setItem(KEY, JSON.stringify(state));
+const info = (id) => Object.assign({ faction: "—", elem: "Физ.", role: "Атака", impact: 100, ap: 90, am: 90, er: 1.2 }, ITEM(id));
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const mind = (id) => Math.min(6, (state.inv[id] || 1) - 1);
+const gearOf = (uid) => state.gear.find((g) => g.uid === uid);
+const scaledG = (v, g) => Math.round(v * (1 + LV_STEP[ITEM(g.id).type] * g.lv) * 10) / 10;
+const holder = (uid) => Object.keys(state.equip).find((c) => state.equip[c].weapon === uid || state.equip[c].disks.includes(uid)) || null;
 const skOf = (id) => (state.skills[id] ||= { lv: [1, 1, 1, 1, 1], core: 0 });
 const skillCap = (id) => 12 + 2 * MINDS.slice(0, mind(id)).filter((m) => m.cap).length;
 const eqOf = (id) => (state.equip[id] ||= { disks: [null, null, null, null, null, null], weapon: null });
+const curBanner = () => BANNERS.find((b) => b.id === curId) || BANNERS[0];
 
 function toast(msg) {
     const t = document.createElement("div");
@@ -97,107 +42,248 @@ function toast(msg) {
     document.body.appendChild(t);
     setTimeout(() => t.remove(), 2500);
 }
+let cloudOn = false, cloudTimer = null;
+function setCloud(text, bad) {
+    const el = $("cloudState");
+    el.textContent = text; el.className = "cloud" + (bad ? " bad" : "");
+}
+function save() {
+    if (!profile) return;
+    state.savedAt = Date.now();
+    localStorage.setItem(KEY + ":" + profile, JSON.stringify(state));
+    if (cloudOn) { setCloud("☁ синхронизация…"); clearTimeout(cloudTimer); cloudTimer = setTimeout(pushCloud, 4000); }
+}
+function pushCloud() {
+    return CLOUD.save(profile, state).then(() => setCloud("☁ сохранено в GitHub"))
+        .catch(() => { cloudOn = false; setCloud("☁ облако недоступно (нужно право gist) — прогресс хранится в браузере", true); });
+}
+// Вход выполнен: берём локальный прогресс игрока и сверяем с облаком — побеждает более свежий
+function startSession(user) {
+    profile = "gh_" + user.id; cloudOn = true;
+    $("loginScreen").classList.add("hidden");
+    $("profName").textContent = user.login;
+    state = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY + ":" + profile) || "null"));
+    renderAll();
+    setCloud("☁ загрузка из GitHub…");
+    CLOUD.load(profile).then((r) => {
+        if (r && (r.savedAt || 0) > (state.savedAt || 0)) {
+            state = Object.assign(fresh(), r);
+            localStorage.setItem(KEY + ":" + profile, JSON.stringify(state));
+            renderAll(); setCloud("☁ синхронизировано с GitHub");
+        } else pushCloud();
+    }).catch(() => { cloudOn = false; setCloud("☁ облако недоступно (нужно право gist) — прогресс хранится в браузере", true); });
+}
+function showLogin(msg, canLogin) {
+    $("loginMsg").textContent = msg;
+    $("ghBtn").style.display = canLogin ? "" : "none";
+    $("loginScreen").classList.remove("hidden");
+}
+async function initAuth() {
+    showLogin("Проверяем вход…", false);
+    const user = await ghVerify();
+    if (user) startSession(user);
+    else showLogin("Для игры нужен вход через GitHub. Прогресс сохраняется в твоём аккаунте.", true);
+}
+function logoutGH() {
+    clearTimeout(cloudTimer);
+    if (profile && cloudOn) CLOUD.save(profile, state).catch(() => {});
+    ghLogout(); profile = null; cloudOn = false;
+    showLogin("Ты вышел из аккаунта. Войди через GitHub, чтобы продолжить.", true);
+}
+function exportSave() {
+    const code = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+    if (navigator.clipboard) navigator.clipboard.writeText(code).catch(() => {});
+    prompt("Код сохранения (уже скопирован). Сохрани его, чтобы перенести прогресс на другое устройство:", code);
+}
+function importSave() {
+    const code = prompt("Вставь код сохранения:");
+    if (!code) return;
+    try { state = Object.assign(fresh(), JSON.parse(decodeURIComponent(escape(atob(code.trim()))))); save(); renderAll(); toast("Сохранение загружено"); }
+    catch (e) { toast("Неверный код сохранения"); }
+}
+function renderAll() { renderTop(); renderSig(); switchTab(curTab); }
 
 // ==========================================
-// 3. КРУТКИ
+// КРУТКИ
 // ==========================================
-function pullOnce(b, bid) {
-    const st = state.ch[bid];
+const poolIds = (type, rank, limited) => ITEMS.filter((i) => i.type === type && i.rarity === rank && (limited === undefined || !!i.limited === limited)).map((i) => i.id);
+function runtime(b) {
+    const r = RULES[b.rule], agent = r.kind === "agent";
+    return { ...r, ...b, featS: b.featS || [], featA: b.featA || [],
+        poolS: poolIds(r.kind, "S", false), poolA: poolIds(r.kind, "A"), poolB: poolIds(agent ? "disk" : "weapon", "B") };
+}
+
+function pullOnce(b) {
+    const st = state.ch[b.rule];
     st.pity++; st.aPity++;
     const n = st.pity;
     const pS = n >= b.hard ? 1 : b.s + Math.max(0, n - (b.soft - 1)) * SOFT_STEP;
-    let rank, id;
-
     if (Math.random() < pS) {
-        rank = "S";
-        const atPity = n;
         st.pity = 0; st.aPity = 0;
-        if (b.upS) {
-            const win = st.gS || Math.random() < b.upS;
-            id = win ? pick(b.featS) : pick(b.poolS.filter((x) => !b.featS.includes(x)));
+        let id;
+        if (b.upS && b.featS.length) {
+            const lose = b.poolS.filter((x) => !b.featS.includes(x));
+            const win = st.gS || Math.random() < b.upS || !lose.length;
+            id = win ? pick(b.featS) : pick(lose);
             st.gS = !win;
         } else id = pick(b.poolS);
-        return { id, rank, bid, pity: atPity };
+        return { id, rank: "S", pity: n };
     }
     if (st.aPity >= 10 || Math.random() < b.a) {
-        rank = "A"; st.aPity = 0;
+        st.aPity = 0;
+        let id;
         const lose = b.poolA.filter((x) => !b.featA.includes(x));
         if (b.featA.length) {
             const win = st.gA || Math.random() < b.upA || !lose.length;
             id = win ? pick(b.featA) : pick(lose);
             st.gA = !win;
         } else id = pick(b.poolA);
-        return { id, rank, bid };
+        return { id, rank: "A" };
     }
-    return { id: pick(b.poolB), rank: "B", bid };
+    return { id: pick(b.poolB), rank: "B" };
 }
 
-// Дубликаты: агенты -> Разум M1..M6, W-двигатели -> уровень R2..R5
+// Агенты: дубликаты открывают Разум M1..M6. W-двигатели и диски не стакаются: каждый — отдельный предмет.
 function give(id) {
-    const it = ITEM(id), have = state.inv[id] || 0;
-    if (it.type === "disk") { state.inv[id] = have + 1; return have ? "" : "NEW"; }
-    const cap = MAX_COPIES[it.type];
-    if (have >= cap) { const back = it.type === "agent" ? 80 : 40; state.money += back; return `+${back} ⬡`; }
+    const it = ITEM(id);
+    if (it.type !== "agent") {
+        const first = !state.gear.some((g) => g.id === id);
+        state.gear.push({ uid: state.nextUid++, id, lv: 0 });
+        return first ? "NEW" : "";
+    }
+    const have = state.inv[id] || 0;
+    if (have >= MAX_COPIES.agent) { state.money += 80; return "+80 ⬡"; }
     state.inv[id] = have + 1;
-    if (it.type === "agent" && !have) state.levels[id] = 1;
-    if (!have) return "NEW";
-    return it.type === "agent" ? `M${have}` : `R${have + 1}`;
+    if (!have) { state.levels[id] = 1; return "NEW"; }
+    return `M${have}`;
 }
 
 function doRoll(count) {
-    const b = BANNERS[curBanner], cost = PULL_COST * count;
-    if (state.money < cost) return toast("Недостаточно полихромов!");
-    state.money -= cost;
-    const results = [];
-    for (let i = 0; i < count; i++) {
-        const r = pullOnce(b, curBanner);
-        r.note = give(r.id);
-        results.push(r);
-        state.history.unshift({ id: r.id, rank: r.rank, bid: r.bid, pity: r.pity || 0, t: Date.now() });
+    const b = runtime(curBanner()), t = b.ticket;
+    if (!b.poolS.length || !b.poolA.length || !b.poolB.length) return toast("Баннер настроен неверно: в пуле нет предметов");
+    if (state[t] < count) {
+        const lack = count - state[t], cost = lack * TAPE_PRICE;
+        if (state.money < cost) return toast(`Не хватает: ${CURRENCY[t].name} ×${lack}. Нужно ${cost} ⬡`);
+        if (!confirm(`Не хватает ${CURRENCY[t].name} ×${lack}. Купить за ${cost} ⬡?`)) return;
+        state.money -= cost; state[t] += lack;
     }
+    state[t] -= count;
+    const results = []; let echo = 0;
+    for (let i = 0; i < count; i++) {
+        const r = pullOnce(b);
+        r.note = give(r.id);
+        echo += ECHOES[r.rank];
+        results.push(r);
+        state.history.unshift({ id: r.id, rank: r.rank, bid: b.id, pity: r.pity || 0, t: Date.now() });
+    }
+    state.echo += echo;
     state.history = state.history.slice(0, 100);
-    save(); renderTop(); renderPity(); showResults(results);
+    save(); renderTop(); renderSig(); showResults(results, echo);
 }
 
-function showResults(results) {
-    const stage = $("stage");
-    stage.classList.remove("flash-s"); void stage.offsetWidth;
-    if (results.some((r) => r.rank === "S")) stage.classList.add("flash-s");
-    stage.innerHTML = `<div class="pull-grid ${results.length === 1 ? "single" : ""}">${results.map((r, i) => {
+function showResults(results, echo) {
+    $("resGrid").className = "res-grid" + (results.length === 1 ? " single" : "");
+    $("resGrid").innerHTML = results.map((r, i) => {
         const it = ITEM(r.id);
-        return `<div class="pull-item r-${r.rank}" style="animation-delay:${i * 0.1}s">
-            <img src="${it.image}" alt=""><b class="rarity-${r.rank}">${it.name}</b>
-            <small>${r.rank}-ранг${r.note ? ` • <span class="${r.note === "NEW" ? "tag" : ""}">${r.note}</span>` : ""}</small></div>`;
-    }).join("")}</div>`;
+        return `<div class="res-wrap" style="animation-delay:${i * 0.12}s"><div class="res-card r-${r.rank}"><img src="${it.image}" alt="">
+            <span class="res-rank">${r.rank}<small>RANK</small></span>${r.note ? `<em class="res-note">${r.note}</em>` : ""}</div>
+            <div class="res-name rarity-${r.rank}">${it.name}</div></div>`;
+    }).join("");
+    $("resEcho").textContent = echo;
+    $("resultScreen").classList.remove("hidden");
 }
 
 // ==========================================
-// 4. ИНТЕРФЕЙС КРУТОК
+// ЭКРАН СИГНАЛОВ, МАГАЗИН, ВЕРХНЯЯ ПАНЕЛЬ
 // ==========================================
-function renderBanners() {
-    $("bannerSelect").innerHTML = Object.entries(BANNERS).map(([id, b]) =>
-        `<button class="banner-btn ${id === curBanner ? "active" : ""}" data-b="${id}">${b.name}</button>`).join("");
-    document.querySelectorAll(".banner-btn").forEach((el) => el.onclick = () => { curBanner = el.dataset.b; renderBanners(); renderPity(); });
-    const b = BANNERS[curBanner], names = (a) => a.map((i) => ITEM(i).name).join(", ");
-    $("bannerInfo").innerHTML = `Шанс S: <b>${(b.s * 100).toFixed(1)}%</b>, мягкий гарант с <b>${b.soft}</b>, жёсткий на <b>${b.hard}</b> • шанс A: <b>${(b.a * 100).toFixed(1)}%</b>, A гарантирован раз в 10 круток`
-        + (b.featS.length ? `<br>S повышенного шанса: <b>${names(b.featS)}</b> (${b.upS * 100}/${100 - b.upS * 100}, после проигрыша следующий S — гарантированно он)` : `<br>S: <b>${names(b.poolS)}</b>, без 50/50`)
-        + (b.featA.length ? `<br>A повышенного шанса: <b>${names(b.featA)}</b>` : "");
-}
-
-function renderPity() {
-    const b = BANNERS[curBanner], st = state.ch[curBanner], next = st.pity + 1;
-    const soft = next >= b.soft ? ` <span class="soft">• мягкий гарант! шанс S: ${Math.min(100, (b.s + (next - (b.soft - 1)) * SOFT_STEP) * 100).toFixed(1)}%</span>` : "";
-    $("pityInfo").innerHTML = `До гаранта S: <span>${st.pity}</span> / ${b.hard} • до гаранта A: <span>${st.aPity}</span> / 10`
-        + (b.upS ? `<br>Следующий S: <span>${st.gS ? "гарантированно повышенный" : "50/50".replace("50", b.upS * 100).replace("50", 100 - b.upS * 100)}</span>` : "") + soft;
-}
-
 function incomePerMin() {
     return state.team.reduce((sum, id) => id ? sum + ITEM(id).income + (state.levels[id] || 1) * 5 + mind(id) * 10 : sum, 0);
 }
+const chipsHtml = () => ["encrypted", "master", "money", "echo"].map((k) =>
+    `<div class="cur-chip" title="${CURRENCY[k].name}"><b>${state[k]}</b><i>${CURRENCY[k].icon}</i></div>`).join("");
 function renderTop() {
     $("moneyCount").textContent = state.money;
     $("incomeRate").textContent = `+${incomePerMin()}/мин`;
+    $("sigCur").innerHTML = chipsHtml();
+    $("shopCur").innerHTML = chipsHtml();
 }
+
+function renderSig() {
+    const b = runtime(curBanner()), st = state.ch[b.rule], tk = CURRENCY[b.ticket];
+    const featItem = ITEM(b.featS[0]);
+    $("sigSide").innerHTML = BANNERS.map((x) => {
+        const f = x.featS && x.featS[0] ? ITEM(x.featS[0]) : null;
+        return `<button class="sig-ch ${x.id === b.id ? "on" : ""}" data-b="${x.id}"><span class="sig-ico" ${f ? `style="background-image:url('${f.image}')"` : ""}>${f ? "" : (x.icon || "✦")}</span>
+            <span><small>СИГНАЛ</small><b>${x.label}</b></span></button>`;
+    }).join("");
+    $("sigStage").style.background = `linear-gradient(135deg, ${b.color || "#0c1a4a"}, #05070f 80%)`;
+    const big = featItem ? (featItem.splash || featItem.image) : "";
+    $("sigChar").src = big; $("sigChar").style.display = big ? "block" : "none";
+    $("sigTitle").textContent = b.title;
+    const days = b.end ? Math.max(0, Math.ceil((new Date(b.end) - Date.now()) / 864e5)) : null;
+    $("sigTime").textContent = days === null ? "Постоянный канал" : `Осталось ${days} д.`;
+    const what = b.kind === "weapon" ? "S-двигателя" : "S-сигнала";
+    $("sigText").innerHTML = b.featS.length
+        ? `Шанс получения <span class="g">эксклюзивного ${what}</span>${b.featA.length ? ` и <span class="p">A-${b.kind === "weapon" ? "двигателей" : "сигналов"}</span>` : ""} повышен!`
+        : `Все S-агенты постоянного пула выпадают в равных долях.`;
+    $("sigName").innerHTML = featItem ? `<i>S</i>${featItem.name}` : "";
+    $("sigName").style.display = featItem ? "block" : "none";
+    $("sigA").innerHTML = b.featA.length ? `<i>A</i>` + b.featA.map((id) => `<img src="${ITEM(id).image}" alt="" title="${ITEM(id).name}">`).join("") : "";
+    $("sigA").style.display = b.featA.length ? "flex" : "none";
+    $("sigPity").innerHTML = `Попыток до гарантированного <span class="p">A</span>-сигнала: <b>${10 - st.aPity}</b><br>Попыток до гарантированного <span class="g">S</span>-сигнала: <b>${b.hard - st.pity}</b>`
+        + (b.upS ? `<br><small>Следующий S: ${st.gS ? "гарантированно повышенный" : `${b.upS * 100}/${100 - b.upS * 100}`}</small>` : "");
+    $("tk1").innerHTML = `${tk.icon} ×1 <small>(есть ${state[b.ticket]})</small>`;
+    $("tk10").innerHTML = `${tk.icon} ×10`;
+}
+
+function showDetails() {
+    const b = runtime(curBanner()), names = (a) => a.map((i) => ITEM(i).name).join(", ") || "—";
+    $("detailsBody").innerHTML = `<h2>${b.title}</h2><p class="muted">${b.name}</p>
+        <p>Шанс S: <b>${(b.s * 100).toFixed(1)}%</b> (мягкий гарант с ${b.soft}-й попытки, жёсткий на ${b.hard}-й)<br>
+        Шанс A: <b>${(b.a * 100).toFixed(1)}%</b>, A гарантирован раз в 10 попыток<br>Билет: <b>${CURRENCY[b.ticket].name}</b></p>
+        <p>${b.featS.length ? `S повышенного шанса: <b>${names(b.featS)}</b> (${b.upS * 100}% при попадании, после проигрыша следующий S гарантирован)` : `S в равных долях: <b>${names(b.poolS)}</b>`}</p>
+        ${b.featA.length ? `<p>A повышенного шанса: <b>${names(b.featA)}</b></p>` : ""}
+        <p class="muted">Попыток на этом баннере: ${state.history.filter((h) => h.bid === b.id).length}</p>`;
+    $("detailsScreen").classList.remove("hidden");
+}
+
+// --- Магазин «Реестр сигналов» ---
+let shopTab = SHOP[0].id;
+const monthKey = () => { const d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1); };
+function boughtCount(key) {
+    if (state.boughtMonth !== monthKey()) { state.boughtMonth = monthKey(); state.bought = {}; }
+    return state.bought[key] || 0;
+}
+function openShop() { $("shopScreen").classList.remove("hidden"); renderShop(); }
+function renderShop() {
+    const tab = SHOP.find((t) => t.id === shopTab) || SHOP[0], cur = CURRENCY[tab.currency];
+    $("shopTabs").innerHTML = SHOP.map((t) => `<button class="${t.id === tab.id ? "on" : ""}" data-t="${t.id}">${t.name}</button>`).join("");
+    const cards = tab.items.map((it) => {
+        const left = it.limit === null ? null : it.limit - boughtCount(it.key);
+        const give = it.give, qty = give.item ? 1 : (give.master || give.encrypted);
+        const icon = give.item ? `<img src="${ITEM(give.item).image}" alt="">` : CURRENCY[give.master ? "master" : "encrypted"].icon;
+        return `<div class="shop-card r-${it.rank} ${left === 0 ? "sold" : ""}" data-key="${it.key}">${it.sale ? `<span class="sale">${it.sale}<br>OFF</span>` : ""}
+            <div class="nm">${it.name}</div><div class="ic">${icon}</div><div class="qty">×${qty}</div>
+            <div class="lim">${left === null ? "Неограниченно" : left === 0 ? "Распродано" : `В этом месяце ×${left}`}</div>
+            <div class="pr"><span>${cur.icon}</span><b>${it.price}</b></div></div>`;
+    });
+    while (cards.length < 12) cards.push(`<div class="shop-card empty"><div class="ic">EMPTY</div></div>`);
+    $("shopGrid").innerHTML = cards.join("");
+}
+function buy(key) {
+    const tab = SHOP.find((t) => t.id === shopTab), it = tab.items.find((x) => x.key === key);
+    if (!it) return;
+    if (it.limit !== null && boughtCount(key) >= it.limit) return toast("Лимит на этот месяц исчерпан");
+    if (state[tab.currency] < it.price) return toast(`Не хватает: ${CURRENCY[tab.currency].name}`);
+    state[tab.currency] -= it.price;
+    if (it.give.item) give(it.give.item);
+    else if (it.give.master) state.master += it.give.master;
+    else state.encrypted += it.give.encrypted;
+    state.bought[key] = boughtCount(key) + 1;
+    save(); renderTop(); renderShop(); renderSig();
+    toast(`Получено: ${it.name}`);
+}
+
 function tick() {
     const now = Date.now(), mins = Math.min(480, Math.floor((now - state.last) / 60000));
     if (mins > 0) {
@@ -214,9 +300,11 @@ function tick() {
 // 5. ВКЛАДКИ, ИСТОРИЯ, ИНВЕНТАРЬ
 // ==========================================
 function switchTab(tab) {
+    curTab = tab;
     document.querySelectorAll(".tab-content").forEach((el) => el.classList.add("hidden"));
     document.querySelectorAll(".tab-btn").forEach((el) => el.classList.toggle("active", el.dataset.tab === tab));
     $("tab-" + tab).classList.remove("hidden");
+    if (tab === "roll") renderSig();
     if (tab === "history") renderHistory();
     if (tab === "inventory") renderInventory();
     if (tab === "characters") renderCharacters();
@@ -227,23 +315,20 @@ function renderHistory() {
     $("historyList").innerHTML = state.history.length ? state.history.map((h) => {
         const it = ITEM(h.id), d = new Date(h.t);
         return `<div class="history-row"><span class="rk rarity-${h.rank}">${h.rank}</span>
-            <span class="rarity-${h.rank}">${it.name} <small>• ${BANNERS[h.bid].name}${h.pity ? ` • гарант: ${h.pity}-я крутка` : ""}</small></span>
+            <span class="rarity-${h.rank}">${it.name} <small>• ${(BANNERS.find((x) => x.id === h.bid) || { name: "—" }).name}${h.pity ? ` • гарант: ${h.pity}-я крутка` : ""}</small></span>
             <small>${d.toLocaleDateString()} ${d.toLocaleTimeString()}</small></div>`;
     }).join("") : `<div class="empty">Ты ещё не крутил сигналы.</div>`;
 }
 
-function freeCount(id) {
-    let used = 0;
-    Object.values(state.equip).forEach((e) => { used += e.disks.filter((d) => d === id).length + (e.weapon === id ? 1 : 0); });
-    return (state.inv[id] || 0) - used;
-}
-const whoUses = (id) => Object.keys(state.equip).filter((c) => state.equip[c].weapon === id).map((c) => ITEM(c).name).join(", ");
-
 function renderInventory() {
-    const cards = (type) => ITEMS.filter((i) => i.type === type && state.inv[i.id]).map((i) => `
-        <div class="char-card"><img src="${i.image}" alt=""><span class="rarity-${i.rarity}">${i.name}</span>
-        <small>${i.type === "weapon" ? `R${state.inv[i.id]} • АТК ${i.atk}` : `${SETS[i.set].name} • ${STAT_NAMES[i.main[0]]} +${i.main[1]}`}</small>
-        <small>${i.type === "weapon" ? (whoUses(i.id) ? "Надет: " + whoUses(i.id) : "Свободен") : `Свободно: ${freeCount(i.id)} из ${state.inv[i.id]}`}</small></div>`).join("");
+    const cards = (type) => state.gear.filter((g) => ITEM(g.id).type === type)
+        .sort((a, b) => "SAB".indexOf(ITEM(a.id).rarity) - "SAB".indexOf(ITEM(b.id).rarity) || b.lv - a.lv || a.uid - b.uid)
+        .map((g) => {
+            const i = ITEM(g.id), w = holder(g.uid);
+            return `<div class="char-card"><img src="${i.image}" alt=""><span class="rarity-${i.rarity}">${i.name}</span>
+                <small>Ур. ${g.lv}/${MAX_LV[type]} • ${type === "weapon" ? "АТК " + scaledG(i.atk, g) : SETS[i.set].name + " • " + STAT_NAMES[i.main[0]] + " +" + scaledG(i.main[1], g)}</small>
+                <small>${w ? "Надет: " + ITEM(w).name : "Свободен"}</small></div>`;
+        }).join("");
     $("weaponGrid").innerHTML = cards("weapon") || `<div class="empty">Нет W-двигателей — крути канал W-двигателей.</div>`;
     $("diskGrid").innerHTML = cards("disk") || `<div class="empty">Нет дисков — они выпадают в каналах агентов.</div>`;
 }
@@ -269,7 +354,7 @@ function renderSquad() {
             <img src="${it.image}" alt=""><h3 class="rarity-${it.rarity}">${it.name}</h3>
             <small>Ур. ${lvl} • M${mind(id)} • ${inf.elem} • ${inf.role}</small>
             <div class="sq-stats"><span>АТК <b>${s.atk}</b></span><span>HP <b>${s.hp}</b></span><span>Доход <b>+${it.income + lvl * 5 + mind(id) * 10}</b></span></div>
-            <div class="sq-eq">W-двигатель: <b>${eq.weapon ? ITEM(eq.weapon).name : "—"}</b><br>Диски: <b>${eq.disks.filter(Boolean).length}/6</b></div>
+            <div class="sq-eq">W-двигатель: <b>${eq.weapon ? ITEM(gearOf(eq.weapon).id).name : "—"}</b><br>Диски: <b>${eq.disks.filter(Boolean).length}/6</b></div>
             <div class="sq-actions"><button class="mini" data-open="${id}">Профиль</button><button class="mini dim" data-rm="${idx}">Убрать</button></div></div>`;
     }).join("");
     $("squadSummary").innerHTML = `<span>Доход отряда: <b>+${incomePerMin()} ⬡/мин</b></span><span>Суммарная АТК: <b>${power}</b></span><span>Суммарный HP: <b>${hp}</b></span>`;
@@ -297,8 +382,8 @@ function calcStats(id) {
     const sk = skOf(id);
     pct.atk += sk.lv.reduce((x, l) => x + l - 1, 0) * 0.8 + sk.core * 3; pct.hp += sk.core * 3;
 
-    if (eq.weapon) { const w = ITEM(eq.weapon); flat.atk += scaled(w.atk, w.id); add(w.sub); add([w.eff[0], w.eff[1] * state.inv[w.id]]); }
-    eq.disks.forEach((did) => { if (did) { const dk = ITEM(did); add([dk.main[0], scaled(dk.main[1], did)]); sets[dk.set] = (sets[dk.set] || 0) + 1; } });
+    if (eq.weapon) { const g = gearOf(eq.weapon), w = ITEM(g.id); flat.atk += scaledG(w.atk, g); add(w.sub); add(w.eff); }
+    eq.disks.forEach((uid) => { if (uid) { const g = gearOf(uid), dk = ITEM(g.id); add([dk.main[0], scaledG(dk.main[1], g)]); sets[dk.set] = (sets[dk.set] || 0) + 1; } });
     Object.entries(sets).forEach(([s, n]) => {
         if (n >= 2) { add(SETS[s].b2); notes.push(`${SETS[s].name} (2): ${fmtBonus(SETS[s].b2)}`); }
         if (n >= 4) { add(SETS[s].b4); notes.push(`${SETS[s].name} (4): ${fmtBonus(SETS[s].b4)}`); }
@@ -330,9 +415,9 @@ function openModal(id) {
     $("charModal").classList.remove("hidden");
 }
 function setModalTab(t) {
-    if (t === "equip") { openEquip(); return; }
     document.querySelectorAll(".modal-tab").forEach((el) => el.classList.toggle("active", el.dataset.mtab === t));
-    ["stats", "skills", "mind"].forEach((p) => $("modal-tab-" + p).classList.toggle("hidden", p !== t));
+    ["stats", "skills", "equip", "mind"].forEach((p) => $("modal-tab-" + p).classList.toggle("hidden", p !== t));
+    $("charModal").classList.toggle("eqmode", t === "equip");
 }
 function renderModal() {
     const id = currentCharId, it = ITEM(id), lvl = state.levels[id] || 1, s = calcStats(id);
@@ -346,8 +431,22 @@ function renderModal() {
     const cost = 100 + 20 * (lvl - 1);
     $("levelUpBtn").textContent = lvl >= 60 ? "Максимальный уровень" : `Прокачать уровень (${cost} ⬡)`;
     $("levelUpBtn").disabled = lvl >= 60;
-    renderSkills(); renderMind(); renderStrip();
+    renderSkills(); renderMind(); renderStrip(); renderEquipView();
     $("cinemaLv").textContent = mind(id) + "/6";
+}
+function renderEquipView() {
+    const eq = eqOf(currentCharId);
+    let html = "";
+    eq.disks.forEach((uid, i) => {
+        const g = uid && gearOf(uid);
+        html += `<div class="ring-slot rs${i + 1}" data-view="${i}">${g ? `<img src="${ITEM(g.id).image}" alt="">` : i + 1}</div>`
+            + (g ? `<div class="slv lv${i + 1}">Lv. ${g.lv}/${MAX_LV.disk}</div>` : "");
+    });
+    const w = eq.weapon && gearOf(eq.weapon);
+    html += `<div class="ring-slot ring-w" data-view="w">${w ? `<img src="${ITEM(w.id).image}" alt="">` : "W-ДВИГАТЕЛЬ"}</div>`
+        + (w ? `<div class="slv lvw">Lv. ${w.lv}/${MAX_LV.weapon}</div>` : "");
+    $("viewRing").innerHTML = html;
+    $("viewNotes").innerHTML = calcStats(currentCharId).notes.join("<br>") || "Надень 2 или 4 диска одного комплекта — получишь бонус.";
 }
 function renderStrip() {
     $("agentStrip").innerHTML = ITEMS.filter((i) => i.type === "agent" && state.inv[i.id]).map((a) =>
@@ -389,15 +488,12 @@ function levelUp() {
     save(); renderTop(); renderModal();
 }
 
-const MAX_ITEM_LV = 10, LV_STEP = 0.12;
-const lvOf = (id) => state.itemLv[id] || 0;
-const scaled = (v, id) => Math.round(v * (1 + LV_STEP * lvOf(id)) * 10) / 10;
 const slotType = () => (eqSlot === "w" ? "weapon" : "disk");
 const slotItem = () => { const e = eqOf(currentCharId); return eqSlot === "w" ? e.weapon : e.disks[eqSlot]; };
-const usedBy = (id) => Object.keys(state.equip).filter((c) => state.equip[c].weapon === id || state.equip[c].disks.includes(id)).map((c) => ITEM(c).name);
+const upCost = (g) => (ITEM(g.id).type === "weapon" ? 40 + 10 * g.lv : 40 + 25 * g.lv);
 
-function openEquip() {
-    eqSlot = "w"; eqFilter = "all"; eqItem = slotItem();
+function openEquip(slot = "w") {
+    eqSlot = slot; eqFilter = "all"; eqItem = slotItem();
     $("eqTitle").textContent = ITEM(currentCharId).name;
     $("equipScreen").classList.remove("hidden");
     renderEquip();
@@ -406,54 +502,57 @@ function closeEquip() { $("equipScreen").classList.add("hidden"); renderModal();
 function selectSlot(s) { eqSlot = s; eqItem = slotItem(); renderEquip(); }
 function cycleFilter() { const o = ["all", "S", "A", "B"]; eqFilter = o[(o.indexOf(eqFilter) + 1) % o.length]; renderEquip(); }
 
-function detailHtml(id) {
-    const it = ITEM(id), lv = lvOf(id), n = state.inv[id], used = usedBy(id);
+function detailHtml(uid) {
+    const g = gearOf(uid), it = ITEM(g.id), w = holder(uid);
     const row = (a, b) => `<div class="stat-row"><span>${a}</span><b>${b}</b></div>`;
     const head = `<h2 class="rarity-${it.rarity}">${it.name}</h2>
-        <div class="eq-badges"><span class="rk rarity-${it.rarity}">${it.rarity}</span><b>Ур. ${lv}/${MAX_ITEM_LV}</b></div>`;
+        <div class="eq-badges"><span class="rk rarity-${it.rarity}">${it.rarity}</span><b>Ур. ${g.lv}/${MAX_LV[it.type]}</b></div>`;
+    const foot = `<p class="muted" style="margin-top:14px">${w ? (w === currentCharId ? "Надет на этом агенте" : "Надет у агента " + ITEM(w).name + " — сначала сними его там") : "Свободен"}</p>`;
     if (it.type === "weapon") {
-        return head + `<div class="stars">${"★".repeat(n)}${"☆".repeat(MAX_COPIES.weapon - n)}</div>
-            <h4>Базовые параметры</h4>${row("Базовая атака", scaled(it.atk, id))}
+        return head + `<h4>Базовые параметры</h4>${row("Базовая атака", scaledG(it.atk, g))}
             <h4>Продвинутые параметры</h4>${row(STAT_NAMES[it.sub[0].replace("%", "")], fmtVal(it.sub))}
-            <h4>Эффект усилителя</h4><p>${fmtBonus(it.eff)} за каждый ранг. Сейчас R${n}: <b>${fmtBonus([it.eff[0], it.eff[1] * n])}</b></p>
-            <p class="muted">${used.length ? "Надет: " + used.join(", ") : "Свободен"}</p>`;
+            <h4>Эффект усилителя</h4><p>${fmtBonus(it.eff)}</p>` + foot;
     }
     const set = SETS[it.set];
-    return head + `<h4>Основной параметр</h4>${row(STAT_NAMES[it.main[0]], "+" + scaled(it.main[1], id))}
-        <h4>Комплект: ${set.name}</h4><p>2 диска: ${fmtBonus(set.b2)}<br>4 диска: ${fmtBonus(set.b4)}</p>
-        <p class="muted">Свободно: ${freeCount(id)} из ${n}${used.length ? " • надет: " + used.join(", ") : ""}</p>`;
+    return head + `<h4>Основной параметр</h4>${row(STAT_NAMES[it.main[0]], "+" + scaledG(it.main[1], g))}
+        <h4>Комплект: ${set.name}</h4><p>2 диска: ${fmtBonus(set.b2)}<br>4 диска: ${fmtBonus(set.b4)}</p>` + foot;
 }
 
 function renderEquip() {
     const eq = eqOf(currentCharId), cur = slotItem();
-    document.querySelectorAll(".ring-slot").forEach((el) => {
-        const s = el.dataset.slot, id = s === "w" ? eq.weapon : eq.disks[+s];
+    document.querySelectorAll(".ring-slot[data-slot]").forEach((el) => {
+        const s = el.dataset.slot, uid = s === "w" ? eq.weapon : eq.disks[+s];
         el.classList.toggle("selected", String(eqSlot) === s);
-        el.innerHTML = id ? `<img src="${ITEM(id).image}" alt="">` : (s === "w" ? "W-ДВИГАТЕЛЬ" : +s + 1);
+        el.innerHTML = uid ? `<img src="${ITEM(gearOf(uid).id).image}" alt="">` : (s === "w" ? "W-ДВИГАТЕЛЬ" : +s + 1);
     });
-    $("ringLv").textContent = eq.weapon ? `Ур. ${lvOf(eq.weapon)}/${MAX_ITEM_LV}` : "";
+    $("ringLv").textContent = eq.weapon ? `Ур. ${gearOf(eq.weapon).lv}/${MAX_LV.weapon}` : "";
     $("eqMoney").textContent = state.money;
     $("eqFilter").textContent = "Фильтр: " + (eqFilter === "all" ? "все" : eqFilter + "-ранг");
 
-    const items = ITEMS.filter((i) => i.type === slotType() && state.inv[i.id] && (eqFilter === "all" || i.rarity === eqFilter))
-        .sort((a, b) => "SAB".indexOf(a.rarity) - "SAB".indexOf(b.rarity));
-    if (!eqItem || !state.inv[eqItem] || ITEM(eqItem).type !== slotType()) eqItem = cur || (items[0] && items[0].id) || null;
+    const items = state.gear.filter((g) => ITEM(g.id).type === slotType() && (eqFilter === "all" || ITEM(g.id).rarity === eqFilter))
+        .sort((a, b) => "SAB".indexOf(ITEM(a.id).rarity) - "SAB".indexOf(ITEM(b.id).rarity) || b.lv - a.lv || a.uid - b.uid);
+    if (!eqItem || !gearOf(eqItem) || ITEM(gearOf(eqItem).id).type !== slotType()) eqItem = cur || (items[0] && items[0].uid) || null;
 
-    $("eqList").innerHTML = items.map((i) => `<div class="eq-tile ${i.rarity} ${i.id === eqItem ? "sel" : ""}" data-id="${i.id}">
-        ${state.seen[i.id] ? "" : '<em class="new">NEW!</em>'}${i.id === cur ? '<em class="on">✔</em>' : ""}
-        <img src="${i.image}" alt=""><span>Ур. ${lvOf(i.id)}</span></div>`).join("")
-        || `<div class="empty">${slotType() === "weapon" ? "Нет W-двигателей." : "Нет дисков."}</div>`;
-    document.querySelectorAll(".eq-tile").forEach((el) => el.onclick = () => { eqItem = el.dataset.id; state.seen[eqItem] = true; save(); renderEquip(); });
+    $("eqList").innerHTML = items.map((g) => {
+        const i = ITEM(g.id), w = holder(g.uid);
+        return `<div class="eq-tile ${i.rarity} ${g.uid === eqItem ? "sel" : ""}" data-uid="${g.uid}">
+            ${state.seen[g.uid] ? "" : '<em class="new">NEW!</em>'}${g.uid === cur ? '<em class="on">✔</em>' : ""}
+            ${w ? `<img class="wear" src="${ITEM(w).image}" alt="">` : ""}<img src="${i.image}" alt=""><span>Ур. ${g.lv}</span></div>`;
+    }).join("") || `<div class="empty">${slotType() === "weapon" ? "Нет W-двигателей." : "Нет дисков."}</div>`;
+    document.querySelectorAll(".eq-tile").forEach((el) => el.onclick = () => { eqItem = +el.dataset.uid; state.seen[eqItem] = true; save(); renderEquip(); });
 
     $("eqDetail").innerHTML = eqItem ? detailHtml(eqItem) : `<div class="empty">Выбери слот справа и предмет слева.</div>`;
 
-    const lv = eqItem ? lvOf(eqItem) : 0;
-    $("eqEquip").disabled = !eqItem || eqItem === cur || freeCount(eqItem) <= 0;
+    const g = eqItem && gearOf(eqItem);
+    $("eqEquip").textContent = cur ? "Заменить" : "Экипировать";
+    $("eqEquip").disabled = !g || eqItem === cur || !!holder(eqItem);
     $("eqUnequip").disabled = !cur;
-    $("eqUpgrade").disabled = !eqItem || lv >= MAX_ITEM_LV;
-    $("eqUpgrade").textContent = eqItem && lv < MAX_ITEM_LV ? `Усилить (${80 + 40 * lv} ⬡)` : "Усилить";
+    const max = g ? MAX_LV[ITEM(g.id).type] : 0;
+    $("eqUpgrade").disabled = !g || g.lv >= max;
+    $("eqUpgrade").textContent = g && g.lv < max ? `Усилить (${upCost(g)} ⬡)` : (g ? "Макс. уровень" : "Усилить");
 }
 function doEquip() {
+    if (!eqItem || holder(eqItem)) return toast("Этот предмет уже надет");
     const eq = eqOf(currentCharId);
     if (eqSlot === "w") eq.weapon = eqItem; else eq.disks[eqSlot] = eqItem;
     save(); renderEquip();
@@ -464,10 +563,11 @@ function doUnequip() {
     save(); renderEquip();
 }
 function doUpgrade() {
-    const lv = lvOf(eqItem), cost = 80 + 40 * lv;
-    if (lv >= MAX_ITEM_LV) return;
+    const g = gearOf(eqItem);
+    if (!g || g.lv >= MAX_LV[ITEM(g.id).type]) return;
+    const cost = upCost(g);
     if (state.money < cost) return toast(`Нужно ${cost} ⬡`);
-    state.money -= cost; state.itemLv[eqItem] = lv + 1;
+    state.money -= cost; g.lv++;
     save(); renderTop(); renderEquip();
 }
 
@@ -482,6 +582,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("eqEquip").onclick = doEquip; $("eqUnequip").onclick = doUnequip; $("eqUpgrade").onclick = doUpgrade;
     $("closeModalBtn").onclick = () => { $("charModal").classList.add("hidden"); renderCharacters(); renderSquad(); renderTop(); };
     $("cinemaBtn").onclick = () => setModalTab("mind");
+    $("viewRing").onclick = (e) => { const b = e.target.closest("[data-view]"); if (b) openEquip(b.dataset.view === "w" ? "w" : +b.dataset.view); };
     $("characterList").onclick = (e) => { const c = e.target.closest("[data-open]"); if (c) openModal(c.dataset.open); };
     $("squadCards").onclick = (e) => {
         const a = e.target.closest("[data-add]"), o = e.target.closest("[data-open]"), r = e.target.closest("[data-rm]");
@@ -495,6 +596,18 @@ document.addEventListener("DOMContentLoaded", () => {
     $("roll1Btn").onclick = () => doRoll(1);
     $("roll10Btn").onclick = () => doRoll(10);
 
-    renderTop(); renderBanners(); renderPity();
-    setInterval(tick, 1000); tick();
+    $("sigSide").onclick = (e) => { const b = e.target.closest("[data-b]"); if (b) { curId = b.dataset.b; renderSig(); } };
+    $("sigRegistry").onclick = openShop;
+    $("sigDetails").onclick = showDetails;
+    $("detailsClose").onclick = () => $("detailsScreen").classList.add("hidden");
+    $("resultScreen").onclick = () => $("resultScreen").classList.add("hidden");
+    $("shopBack").onclick = () => $("shopScreen").classList.add("hidden");
+    $("shopTabs").onclick = (e) => { const b = e.target.closest("[data-t]"); if (b) { shopTab = b.dataset.t; renderShop(); } };
+    $("shopGrid").onclick = (e) => { const c = e.target.closest("[data-key]"); if (c) buy(c.dataset.key); };
+    $("ghBtn").onclick = ghLogin;
+    $("profSwitch").onclick = logoutGH; $("saveExport").onclick = exportSave; $("saveImport").onclick = importSave;
+    window.addEventListener("gh-auth", initAuth);
+
+    setInterval(tick, 1000);
+    initAuth();
 });
