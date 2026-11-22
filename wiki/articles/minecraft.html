@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!-- Страница создана wiki-editor.py. Меняй её через редактор: ручные правки при пересборке пропадут. -->
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Проекты Minecraft — MysticRealities Wiki</title>
+    <meta name="description" content="Проекты Minecraft">
+
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="article.css">
+</head>
+<body>
+
+<header class="header">
+    <a href="../index.html" class="logo">
+        MYSTIC<span>REALITIES</span>
+        <small>WIKI</small>
+    </a>
+    <nav>
+        <a href="../index.html">Главная сайта</a>
+        <a href="../index.html#categories">Категории</a>
+        <a href="../index.html#articles">Статьи</a>
+        <button id="loginBtn" class="login-btn">Войти</button>
+    </nav>
+</header>
+
+<main class="article-page">
+
+    <nav class="breadcrumbs">
+        <a href="../index.html">Главная Wiki</a>
+        <span>/</span>
+        <a href="../index.html#categories">Minecraft</a>
+        <span>/</span>
+        Проекты Minecraft
+    </nav>
+
+    <header class="article-header">
+        <div class="eyebrow">MINECRAFT</div>
+        <h1>Проекты Minecraft</h1>
+    </header>
+
+    <div class="article-layout" style="grid-template-columns: 1fr;">
+
+        <article class="article-body">
+
+            <p>
+                ничего нету
+            </p>
+
+        </article>
+
+
+    </div>
+
+</main>
+
+<div class="comments-section">
+    <h2>Комментарии</h2>
+    <script src="https://giscus.app/client.js"
+            data-repo="FNFPYCC/MysticRealities"
+            data-repo-id="R_kgDOVtfCDA"
+            data-category="Comments"
+            data-category-id="DIC_kwDOVtfCDM4DLg8e"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="dark"
+            data-lang="ru"
+            crossorigin="anonymous"
+            async>
+    </script>
+</div>
+
+<div class="lightbox" id="lightbox">
+    <span class="lightbox-close" id="lightboxClose">×</span>
+    <img src="" alt="" id="lightboxImg">
+</div>
+
+<script src="../script.js"></script>
+
+<script>
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+document.querySelectorAll(".gallery img").forEach(img => {
+    img.addEventListener("click", () => {
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt;
+        lightbox.classList.add("open");
+    });
+});
+document.getElementById("lightboxClose").addEventListener("click", () => lightbox.classList.remove("open"));
+lightbox.addEventListener("click", e => { if (e.target === lightbox) lightbox.classList.remove("open"); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") lightbox.classList.remove("open"); });
+</script>
+
+</body>
+</html>

@@ -18,7 +18,7 @@ const MAX_LV = { weapon: 60, disk: 15 }, LV_STEP = { weapon: 0.02, disk: 0.08 };
 const KEY = "gacha_zzz_v5";
 const freshCh = () => ({ pity: 0, aPity: 0, gS: false, gA: false });
 const fresh = () => ({ money: 1600, master: 5, encrypted: 3, echo: 0, ch: { excl: freshCh(), std: freshCh(), weapon: freshCh() },
-    inv: {}, levels: {}, team: [null, null, null], equip: {}, gear: [], nextUid: 1, seen: {}, skills: {}, history: [],
+    inv: {}, minds: {}, levels: {}, team: [null, null, null], equip: {}, gear: [], nextUid: 1, seen: {}, skills: {}, history: [],
     bought: {}, boughtMonth: "", last: Date.now(), savedAt: 0 });
 let state = fresh(), profile = null;
 let curId = BANNERS[0].id, curTab = "roll", currentCharId = null, eqSlot = "w", eqItem = null, eqFilter = "all";
@@ -27,12 +27,15 @@ const $ = (id) => document.getElementById(id);
 const ITEM = (id) => ITEMS.find((i) => i.id === id);
 const info = (id) => Object.assign({ faction: "—", elem: "Физ.", role: "Атака", impact: 100, ap: 90, am: 90, er: 1.2 }, ITEM(id));
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-const mind = (id) => Math.min(6, (state.inv[id] || 1) - 1);
+const mind = (id) => Math.min(6, state.minds[id] || 0);                       // пробуждённые уровни Разума
+const dupesLeft = (id) => Math.max(0, (state.inv[id] || 1) - 1 - mind(id));   // дубликаты, ещё не потраченные
 const gearOf = (uid) => state.gear.find((g) => g.uid === uid);
 const scaledG = (v, g) => Math.round(v * (1 + LV_STEP[ITEM(g.id).type] * g.lv) * 10) / 10;
 const holder = (uid) => Object.keys(state.equip).find((c) => state.equip[c].weapon === uid || state.equip[c].disks.includes(uid)) || null;
 const skOf = (id) => (state.skills[id] ||= { lv: [1, 1, 1, 1, 1], core: 0 });
-const skillCap = (id) => 12 + 2 * MINDS.slice(0, mind(id)).filter((m) => m.cap).length;
+// У агента могут быть свои уровни Разума (поле minds в gacha-content.js), иначе берутся общие
+const mindsOf = (id) => { const m = ITEM(id).minds; return Array.isArray(m) && m.length === 6 ? m : MINDS; };
+const skillCap = (id) => 12 + 2 * mindsOf(id).slice(0, mind(id)).filter((m) => m.cap).length;
 const eqOf = (id) => (state.equip[id] ||= { disks: [null, null, null, null, null, null], weapon: null });
 const curBanner = () => BANNERS.find((b) => b.id === curId) || BANNERS[0];
 
@@ -155,7 +158,7 @@ function give(id) {
     if (have >= MAX_COPIES.agent) { state.money += 80; return "+80 ⬡"; }
     state.inv[id] = have + 1;
     if (!have) { state.levels[id] = 1; return "NEW"; }
-    return `M${have}`;
+    return "ДУБЛЬ";   // уровень Разума не растёт сам: игрок пробуждает его в «Ментальной картине»
 }
 
 function doRoll(count) {
@@ -355,19 +358,46 @@ function renderSquad() {
             <small>Ур. ${lvl} • M${mind(id)} • ${inf.elem} • ${inf.role}</small>
             <div class="sq-stats"><span>АТК <b>${s.atk}</b></span><span>HP <b>${s.hp}</b></span><span>Доход <b>+${it.income + lvl * 5 + mind(id) * 10}</b></span></div>
             <div class="sq-eq">W-двигатель: <b>${eq.weapon ? ITEM(gearOf(eq.weapon).id).name : "—"}</b><br>Диски: <b>${eq.disks.filter(Boolean).length}/6</b></div>
-            <div class="sq-actions"><button class="mini" data-open="${id}">Профиль</button><button class="mini dim" data-rm="${idx}">Убрать</button></div></div>`;
+            <div class="sq-actions"><button class="mini" data-open="${id}">Профиль</button><button class="mini" data-pick="${idx}">Заменить</button><button class="mini dim" data-rm="${idx}">Убрать</button></div></div>`;
     }).join("");
     $("squadSummary").innerHTML = `<span>Доход отряда: <b>+${incomePerMin()} ⬡/мин</b></span><span>Суммарная АТК: <b>${power}</b></span><span>Суммарный HP: <b>${hp}</b></span>`;
-    $("teamPicker").classList.add("hidden");
 }
 
-function openTeamPicker(idx) {
-    const free = ITEMS.filter((i) => i.type === "agent" && state.inv[i.id] && !state.team.includes(i.id));
-    const box = $("teamPicker");
-    box.classList.remove("hidden");
-    box.innerHTML = `<div class="title">Кого поставить в слот ${idx + 1}?</div>` +
-        (free.length ? free.map((c) => `<button data-id="${c.id}">${c.name}</button>`).join("") : `<div class="empty">Нет свободных агентов.</div>`);
-    box.querySelectorAll("button").forEach((b) => b.onclick = () => { state.team[idx] = b.dataset.id; save(); renderTop(); renderSquad(); });
+// --- Выбор агента в слот отряда (как в ZZZ) ---
+let pickSlot = 0, pickId = null;
+const ownedAgents = () => ITEMS.filter((i) => i.type === "agent" && state.inv[i.id])
+    .sort((a, b) => "SAB".indexOf(a.rarity) - "SAB".indexOf(b.rarity) || (state.levels[b.id] || 1) - (state.levels[a.id] || 1));
+function openPick(idx) {
+    pickSlot = idx; pickId = state.team[idx] || (ownedAgents()[0] || {}).id || null;
+    $("pickScreen").classList.remove("hidden"); renderPick();
+}
+function closePick() { $("pickScreen").classList.add("hidden"); renderSquad(); renderTop(); }
+function renderPick() {
+    const list = ownedAgents(), cur = state.team[pickSlot];
+    if (!pickId || !state.inv[pickId]) pickId = list.length ? list[0].id : null;
+    $("pkTitle").textContent = `Выбор агента — слот ${pickSlot + 1}`;
+    $("pkGrid").innerHTML = list.map((a) => {
+        const n = state.team.indexOf(a.id) + 1;
+        return `<div class="pk-card r-${a.rarity} ${a.id === pickId ? "sel" : ""}" data-id="${a.id}">${n ? `<i class="pk-n">${n}</i>` : ""}
+            <img src="${a.image}" alt=""><div class="pk-bar"><b>${a.rarity}</b>Ур. ${state.levels[a.id] || 1}<span>${info(a.id).elem}</span></div></div>`;
+    }).join("") || `<div class="empty">У тебя пока нет агентов — покрути сигналы.</div>`;
+    const a = pickId && ITEM(pickId);
+    $("pkArt").src = a ? (a.splash || a.image) : ""; $("pkArt").style.display = a ? "block" : "none";
+    $("pkName").textContent = a ? a.name : "";
+    $("pkChips").innerHTML = a ? `<span>${info(a.id).elem}</span><span>${info(a.id).role}</span>` : "";
+    $("pkAssign").textContent = cur ? "Заменить" : "В отряд";
+    $("pkAssign").disabled = !a || pickId === cur;
+}
+function assignSlot(idx, id) {
+    const j = state.team.indexOf(id);
+    if (j >= 0 && j !== idx) state.team[j] = state.team[idx];   // агент уже в другом слоте — меняемся местами
+    state.team[idx] = id;
+    save();
+}
+function autoPick() {   // «Быстрый подбор»: три самых сильных агента по АТК
+    state.team = ownedAgents().map((a) => ({ id: a.id, atk: calcStats(a.id).atk })).sort((a, b) => b.atk - a.atk).slice(0, 3).map((x) => x.id);
+    while (state.team.length < 3) state.team.push(null);
+    save(); renderPick(); renderTop();
 }
 
 // ==========================================
@@ -378,7 +408,7 @@ function calcStats(id) {
     const k = 1 + 0.045 * (lvl - 1), eq = eqOf(id);
     const flat = { hp: 0, atk: 0, def: 0 }, pct = { hp: 0, atk: 0, def: 0 }, crit = { cr: 5, cd: 50 }, sets = {}, notes = [];
     const add = ([s, v]) => s.endsWith("%") ? (pct[s.slice(0, -1)] += v) : (s in crit ? (crit[s] += v) : (flat[s] += v));
-    MINDS.slice(0, mind(id)).forEach((m) => (m.fx || []).forEach(add));
+    mindsOf(id).slice(0, mind(id)).forEach((m) => (m.fx || []).forEach(add));
     const sk = skOf(id);
     pct.atk += sk.lv.reduce((x, l) => x + l - 1, 0) * 0.8 + sk.core * 3; pct.hp += sk.core * 3;
 
@@ -415,14 +445,15 @@ function openModal(id) {
     $("charModal").classList.remove("hidden");
 }
 function setModalTab(t) {
+    if (t === "mind") { openMind(); return; }
     document.querySelectorAll(".modal-tab").forEach((el) => el.classList.toggle("active", el.dataset.mtab === t));
-    ["stats", "skills", "equip", "mind"].forEach((p) => $("modal-tab-" + p).classList.toggle("hidden", p !== t));
+    ["stats", "skills", "equip"].forEach((p) => $("modal-tab-" + p).classList.toggle("hidden", p !== t));
     $("charModal").classList.toggle("eqmode", t === "equip");
 }
 function renderModal() {
     const id = currentCharId, it = ITEM(id), lvl = state.levels[id] || 1, s = calcStats(id);
     const row = (n, v) => `<div class="stat-row"><span>${n}</span><b>${v}</b></div>`;
-    $("statMeta").innerHTML = row("Уровень", lvl + " / 60") + row("Копии / Разум", `x${state.inv[id]} • M${mind(id)}/6`) +
+    $("statMeta").innerHTML = row("Уровень", lvl + " / 60") + row("Копии / Разум", `x${state.inv[id]} • M${mind(id)}/6`) + row("Дублей для Разума", dupesLeft(id)) +
         row("Доход", `+${it.income + lvl * 5 + mind(id) * 10} ⬡/мин`);
     $("statBox").innerHTML = row("HP", s.hp) + row("Сила атаки", s.atk) + row("Защита", s.def) + row("Импульс", s.impact) +
         row("Шанс крит.", s.cr) + row("Крит. урон", s.cd) + row("Контроль аномалии", s.ap) + row("Знание аномалии", s.am) +
@@ -431,8 +462,9 @@ function renderModal() {
     const cost = 100 + 20 * (lvl - 1);
     $("levelUpBtn").textContent = lvl >= 60 ? "Максимальный уровень" : `Прокачать уровень (${cost} ⬡)`;
     $("levelUpBtn").disabled = lvl >= 60;
-    renderSkills(); renderMind(); renderStrip(); renderEquipView();
+    renderSkills(); renderStrip(); renderEquipView();
     $("cinemaLv").textContent = mind(id) + "/6";
+    $("cinemaBtn").classList.toggle("alert", dupesLeft(id) > 0 && mind(id) < 6);
 }
 function renderEquipView() {
     const eq = eqOf(currentCharId);
@@ -448,10 +480,9 @@ function renderEquipView() {
     $("viewRing").innerHTML = html;
     $("viewNotes").innerHTML = calcStats(currentCharId).notes.join("<br>") || "Надень 2 или 4 диска одного комплекта — получишь бонус.";
 }
-function renderStrip() {
-    $("agentStrip").innerHTML = ITEMS.filter((i) => i.type === "agent" && state.inv[i.id]).map((a) =>
-        `<button class="strip-ag ${a.id === currentCharId ? "cur" : ""} ${state.team.includes(a.id) ? "inteam" : ""}" data-id="${a.id}" title="${a.name}"><img src="${a.image}" alt=""></button>`).join("");
-}
+const stripHtml = () => ITEMS.filter((i) => i.type === "agent" && state.inv[i.id]).map((a) =>
+    `<button class="strip-ag ${a.id === currentCharId ? "cur" : ""} ${state.team.includes(a.id) ? "inteam" : ""}" data-id="${a.id}" title="${a.name}"><img src="${a.image}" alt=""></button>`).join("");
+function renderStrip() { $("agentStrip").innerHTML = stripHtml(); }
 function renderSkills() {
     const id = currentCharId, sk = skOf(id), cap = skillCap(id);
     const pill = (a, b) => `<div class="core-pill">${[a, b].map((i) => `<div class="core-node ${i < sk.core ? "on" : ""}">${CORE_LETTERS[i]}</div>`).join("")}</div>`;
@@ -472,13 +503,41 @@ function upgradeSkill(which) {
     if (which === "core") sk.core++; else sk.lv[+which]++;
     save(); renderTop(); renderModal();
 }
-function renderMind() {
-    const m = mind(currentCharId), n = state.inv[currentCharId];
-    $("mindList").innerHTML = MINDS.map((x, i) => `<div class="mind-card ${i < m ? "on" : ""}">
-        <div class="mind-h"><b>${String(i + 1).padStart(2, "0")}</b>${i < m ? "РАЗУМ" : "ЗАБЛОКИРОВАНО"}</div>
-        <div class="mind-b"><h4>${x.name}</h4><p>${x.desc}</p></div></div>`).join("");
-    $("mindInfo").textContent = m >= 6 ? "Все разумы открыты. Лишние копии превращаются в полихромы."
-        : `Копий: ${n} из 7 • следующий дубликат агента откроет Разум ${m + 1}`;
+// --- «Ментальная картина»: дубликаты копятся, Разум пробуждает игрок ---
+let awakenIdx = null;
+function openMind() { renderMindScreen(); $("mindScreen").classList.remove("hidden"); }
+function closeMind() { $("mindScreen").classList.add("hidden"); renderModal(); }
+function renderMindScreen() {
+    const id = currentCharId, it = ITEM(id), m = mind(id), left = dupesLeft(id), list = mindsOf(id);
+    const st = (i) => (i < m ? "on" : (i === m && left > 0 ? "can" : "off"));
+    $("msStrip").innerHTML = stripHtml();
+    $("msArt").src = it.splash || it.image;
+    $("msSide").innerHTML = list.map((x, i) => `<button class="ms-lv ${st(i)}" data-i="${i}"><b>${String(i + 1).padStart(2, "0")}</b><small>LEVEL</small></button>`
+        + (i === 2 ? '<div class="ms-stage-t">STAGE</div>' : "")).join("") + `<div class="ms-dupes">Дублей: <b>${left}</b></div>`;
+    $("msCards").innerHTML = list.map((x, i) => {
+        const s = st(i);
+        return `<div class="ms-card mc${i + 1} ${s}" data-i="${i}" title="${x.desc}"><span class="ms-n">${String(i + 1).padStart(2, "0")}</span>
+            <div class="ms-h">${s === "on" ? "MIND" : s === "can" ? "ПРОБУДИТЬ" : "LOCKED"}${s === "can" ? '<i class="ms-bang">!</i>' : ""}</div><div class="ms-t">${x.name}</div></div>`;
+    }).join("");
+}
+function askAwaken(i) {
+    const id = currentCharId, m = mind(id), x = mindsOf(id)[i];
+    if (i < m) return toast(`Разум ${i + 1} уже пробуждён: ${x.desc}`);
+    if (i > m) return toast(`Сначала пробуди Разум ${m + 1}`);
+    if (!dupesLeft(id)) return toast("Нужен дубликат агента — крути сигналы");
+    awakenIdx = i;
+    $("awTitle").textContent = x.name; $("awDesc").textContent = x.desc;
+    $("awCount").textContent = `1/${dupesLeft(id)}`; $("awImg").src = ITEM(id).image;
+    $("awakenScreen").classList.remove("hidden");
+}
+function doAwaken() {
+    const id = currentCharId;
+    if (awakenIdx !== mind(id) || !dupesLeft(id)) return;
+    state.minds[id] = mind(id) + 1;
+    save();
+    $("awakenScreen").classList.add("hidden");
+    toast(`Пробуждён Разум ${mind(id)}: ${mindsOf(id)[awakenIdx].name}`);
+    renderMindScreen(); renderModal(); renderTop();
 }
 function levelUp() {
     const lvl = state.levels[currentCharId] || 1, cost = 100 + 20 * (lvl - 1);
@@ -580,13 +639,23 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".ring-slot").forEach((el) => el.onclick = () => selectSlot(el.dataset.slot === "w" ? "w" : +el.dataset.slot));
     $("eqBack").onclick = closeEquip; $("eqFilter").onclick = cycleFilter;
     $("eqEquip").onclick = doEquip; $("eqUnequip").onclick = doUnequip; $("eqUpgrade").onclick = doUpgrade;
-    $("closeModalBtn").onclick = () => { $("charModal").classList.add("hidden"); renderCharacters(); renderSquad(); renderTop(); };
+    $("closeModalBtn").onclick = () => { $("charModal").classList.add("hidden"); renderCharacters(); renderSquad(); renderTop(); if (!$("pickScreen").classList.contains("hidden")) renderPick(); };
     $("cinemaBtn").onclick = () => setModalTab("mind");
+    $("pkGrid").onclick = (e) => { const c = e.target.closest("[data-id]"); if (c) { pickId = c.dataset.id; renderPick(); } };
+    $("pkAssign").onclick = () => { assignSlot(pickSlot, pickId); closePick(); };
+    $("pkCancel").onclick = closePick; $("pkAuto").onclick = autoPick;
+    document.querySelectorAll("[data-pktab]").forEach((b) => b.onclick = () => { if (pickId) { openModal(pickId); setModalTab(b.dataset.pktab); } });
+    $("msBack").onclick = closeMind;
+    $("msSide").onclick = (e) => { const b = e.target.closest("[data-i]"); if (b) askAwaken(+b.dataset.i); };
+    $("msCards").onclick = (e) => { const b = e.target.closest("[data-i]"); if (b) askAwaken(+b.dataset.i); };
+    $("msStrip").onclick = (e) => { const b = e.target.closest("[data-id]"); if (b) { loadAgent(b.dataset.id); renderMindScreen(); } };
+    $("awCancel").onclick = () => $("awakenScreen").classList.add("hidden"); $("awOk").onclick = doAwaken;
     $("viewRing").onclick = (e) => { const b = e.target.closest("[data-view]"); if (b) openEquip(b.dataset.view === "w" ? "w" : +b.dataset.view); };
     $("characterList").onclick = (e) => { const c = e.target.closest("[data-open]"); if (c) openModal(c.dataset.open); };
     $("squadCards").onclick = (e) => {
-        const a = e.target.closest("[data-add]"), o = e.target.closest("[data-open]"), r = e.target.closest("[data-rm]");
-        if (a) openTeamPicker(+a.dataset.add);
+        const a = e.target.closest("[data-add]"), o = e.target.closest("[data-open]"), r = e.target.closest("[data-rm]"), p = e.target.closest("[data-pick]");
+        if (a) openPick(+a.dataset.add);
+        else if (p) openPick(+p.dataset.pick);
         else if (o) openModal(o.dataset.open);
         else if (r) { state.team[+r.dataset.rm] = null; save(); renderTop(); renderSquad(); }
     };

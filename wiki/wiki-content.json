@@ -1,0 +1,215 @@
+{
+  "settings": {
+    "giscus": {
+      "repo": "FNFPYCC/MysticRealities",
+      "repo_id": "R_kgDOVtfCDA",
+      "category": "Comments",
+      "category_id": "DIC_kwDOVtfCDM4DLg8e"
+    },
+    "comments_default": true
+  },
+  "categories": [
+    {
+      "id": "game-world",
+      "name": "Minecraft",
+      "icon": "▦",
+      "tag": "GAME WORLD",
+      "desc": "Миры, измерения, модификации, механики и игровые проекты."
+    },
+    {
+      "id": "characters",
+      "name": "Персонажи",
+      "icon": "♙",
+      "tag": "CHARACTERS",
+      "desc": "Герои, их способности, истории, отношения и особенности."
+    },
+    {
+      "id": "lore",
+      "name": "Лор",
+      "icon": "◈",
+      "tag": "LORE",
+      "desc": "Истории, события, измерения, фракции и хронология."
+    },
+    {
+      "id": "archive",
+      "name": "Архив",
+      "icon": "▤",
+      "tag": "ARCHIVE",
+      "desc": "Документы, секреты, заметки и дополнительные материалы."
+    }
+  ],
+  "articles": [
+    {
+      "slug": "minecraft",
+      "title": "Проекты Minecraft",
+      "short": "Проекты Minecraft",
+      "category": "game-world",
+      "subtitle": "",
+      "summary": "",
+      "published": true,
+      "card": false,
+      "card_symbol": "▤",
+      "card_image": "",
+      "comments": true,
+      "custom": false,
+      "infobox_title": "КАРТОЧКА",
+      "infobox_image": "",
+      "infobox": [],
+      "blocks": [
+        {
+          "t": "p",
+          "text": "ничего нету"
+        }
+      ],
+      "video_items": []
+    },
+    {
+      "slug": "tl",
+      "title": "_TL_",
+      "short": "TL",
+      "category": "characters",
+      "subtitle": "Прототип робота из вселенной MysticRealities",
+      "summary": "Прототип.",
+      "published": true,
+      "card": true,
+      "card_symbol": "▤",
+      "card_image": "media/t_l.png",
+      "comments": true,
+      "custom": false,
+      "infobox_title": "КАРТОЧКА ПЕРСОНАЖА",
+      "infobox_image": "media/tl.png",
+      "infobox": [
+        [
+          "Полное имя",
+          "Time Lord"
+        ],
+        [
+          "Прозвище",
+          "TL"
+        ],
+        [
+          "Раса",
+          "Прототип компании<br>«Creation Robot ┃ C.R.»"
+        ],
+        [
+          "Кодовое имя",
+          "TTL-021"
+        ],
+        [
+          "Возраст",
+          "???"
+        ],
+        [
+          "Роль",
+          "Уничтожение VoidMan'а"
+        ],
+        [
+          "Вселенная",
+          "MysticRealities"
+        ],
+        [
+          "Первое появление",
+          "0 сезон «Помощь в проблеме»"
+        ],
+        [
+          "Статус",
+          "Мёртв (6 сезон «Назад в прошлое»)"
+        ]
+      ],
+      "blocks": [
+        {
+          "t": "h2",
+          "text": "Общая информация"
+        },
+        {
+          "t": "p",
+          "text": "Прототип TTL-021 — является завершённым прототипом в серии создания роботов, для борьбы с VoidMan'ом. Является участником организации «Время» и был собран под их финансированием."
+        },
+        {
+          "t": "h2",
+          "text": "История"
+        },
+        {
+          "t": "p",
+          "text": "Этот прототип был собран 21 по счёту в серии создания роботов, для борьбы с VoidMan'ом. Он был экспериментом использования временного осколка для временной энергии. Прототип успешно прошёл все испытания, после чего был принят в организацию «Время», как агент в сфере выполнения экстренных задач. Был собран компанией «Creation Robot ┃ C.R.» руками TimeEngineer'а, TimeScientist'а под финансированием организации «Время»."
+        },
+        {
+          "t": "h2",
+          "text": "Связи с другими персонажами"
+        },
+        {
+          "t": "ul",
+          "items": [
+            "<strong>TimeEngineer</strong> <span>— создатель.</span>",
+            "<strong>TimeScientist</strong> <span>— создатель.</span>",
+            "<strong>TimeKeeper</strong> <span>— глава организации «Время».</span>",
+            "<strong>TimeAgent</strong> <span>— сотрудник и учитель по боевому искусству в организации «Время».</span>",
+            "<strong>Voidiy</strong> <span>— старший брат.</span>",
+            "<strong>NoName</strong> <span>— старший брат.</span>",
+            "<strong>Grock</strong> <span>— старший брат.</span>",
+            "<strong>Flamy</strong> <span>— старший брат.</span>",
+            "<strong>Prototype</strong> <span>— старший брат.</span>"
+          ]
+        },
+        {
+          "t": "h2",
+          "text": "Внешность"
+        },
+        {
+          "t": "p",
+          "text": "Монитор с песочно-серым оболочкой, сам монитор тёмно-коричневый с жёлтыми сенсорами. На теле присутствует серая футболка с чёрными ремнями и коричневыми сумками. Также накинута белая ткань. На руках прикреплены усилители энергии. Имеет ремень и тёмно-серые штаны с чёрными ботинками."
+        },
+        {
+          "t": "h2",
+          "text": "Способности"
+        },
+        {
+          "t": "ul",
+          "items": [
+            "<strong>Виденье в будущее</strong> — позволяет немного видеть будущее. (Пассивка)",
+            "<strong>Конвертер</strong> — позволяет конвертировать всю элементарную энергию во временную. (Пассивка)",
+            "<strong>Временной разлом</strong> — позволяет открывать временной разлом, функционал которого напоминает портативное хранилище."
+          ]
+        },
+        {
+          "t": "h2",
+          "text": "Слабости"
+        },
+        {
+          "t": "p",
+          "text": "Главной слабостью является временной осколок, который спрятан глубоко в теле. Если моментально уничтожить осколок, то энергия не успеет спасти носителя и прототип перестанет быть активным."
+        }
+      ]
+    },
+    {
+      "slug": "video",
+      "title": "Видео",
+      "short": "Все видео из мистика",
+      "category": "archive",
+      "subtitle": "Видеоматериалы, трейлеры и записи, связанные с проектами MysticRealities.",
+      "summary": "",
+      "published": true,
+      "card": true,
+      "card_symbol": "▤",
+      "card_image": "",
+      "comments": true,
+      "custom": false,
+      "infobox_title": "КАРТОЧКА",
+      "infobox_image": "",
+      "infobox": [],
+      "blocks": [],
+      "video_items": [
+        {
+          "title": "ХЕЛЛОУИН ТРЕЙЛЕР",
+          "src": "media/video/1118_2.mp4",
+          "date": "1 ноября 2024г"
+        },
+        {
+          "title": "Театр Нарратора",
+          "src": "media/video/2_5194936508435422061_2.mp4",
+          "date": "20 ноября 2024г"
+        }
+      ]
+    }
+  ]
+}

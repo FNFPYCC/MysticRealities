@@ -83,7 +83,6 @@
     <div id="tab-squad" class="tab-content hidden">
         <h2>Отряд</h2>
         <div class="squad-summary" id="squadSummary"></div>
-        <div id="teamPicker" class="picker hidden"></div>
         <div class="squad-cards" id="squadCards"></div>
     </div>
 
@@ -120,11 +119,6 @@
                 <div id="modal-tab-equip" class="hidden">
                     <div class="ring" id="viewRing"></div>
                     <div class="set-bonuses view-notes" id="viewNotes"></div>
-                </div>
-
-                <div id="modal-tab-mind" class="hidden">
-                    <div class="muted" id="mindInfo" style="margin-bottom: 12px;"></div>
-                    <div class="mind-list" id="mindList"></div>
                 </div>
             </div>
         </div>
@@ -197,6 +191,47 @@
     <button class="hero-button" id="ghBtn" style="width:100%;display:none">Войти через GitHub</button>
 </div></div>
 
+<!-- ВЫБОР АГЕНТА В СЛОТ ОТРЯДА -->
+<div id="pickScreen" class="pick-screen hidden">
+    <div class="ms-top">
+        <button id="pkCancel" class="eq-back">⮌ Отмена</button>
+        <div class="ms-title" id="pkTitle"></div>
+        <button class="pill" id="pkAuto">⚡ Быстрый подбор</button>
+    </div>
+    <div class="pk-body">
+        <div class="pk-left">
+            <img id="pkArt" alt="">
+            <div class="pk-name"><b id="pkName"></b><div class="chips" id="pkChips"></div></div>
+            <div class="pk-tabs"><button data-pktab="stats">Базовые параметры</button><button data-pktab="skills">Навыки</button><button data-pktab="equip">Снаряжение</button></div>
+        </div>
+        <div class="pk-grid" id="pkGrid"></div>
+    </div>
+    <div class="pk-bottom"><button class="hero-button" id="pkAssign">В отряд</button></div>
+</div>
+
+<!-- МЕНТАЛЬНАЯ КАРТИНА (РАЗУМ) -->
+<div id="mindScreen" class="mind-screen hidden">
+    <div class="ms-top">
+        <button id="msBack" class="eq-back">⮌ Назад</button>
+        <div class="ms-title">Ментальная картина</div>
+        <div class="agent-strip" id="msStrip"></div>
+    </div>
+    <div class="ms-body">
+        <div class="ms-side" id="msSide"></div>
+        <div class="ms-stage"><img id="msArt" alt=""><div id="msCards"></div></div>
+    </div>
+</div>
+
+<!-- ПОДТВЕРЖДЕНИЕ: ПРОБУДИТЬ РАЗУМ -->
+<div id="awakenScreen" class="awaken hidden">
+    <div class="aw-logo">MIND<small>[ MINDSCAPE CINEMA ]</small></div>
+    <h2 id="awTitle"></h2>
+    <p class="aw-desc" id="awDesc"></p>
+    <div class="aw-item"><img id="awImg" alt=""><span id="awCount">1/1</span></div>
+    <div class="aw-btns"><button id="awCancel">✕ Отменить</button><button id="awOk">✓ Пробудить</button></div>
+</div>
+
+<script src="gacha-content.js"></script>
 <script src="gacha-data.js"></script>
 <script src="gacha-auth.js"></script>
 <script src="gacha.js"></script>
