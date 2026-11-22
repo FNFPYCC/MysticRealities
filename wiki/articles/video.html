@@ -8,6 +8,7 @@
     <title>Видео — MysticRealities Wiki</title>
     <meta name="description" content="Видеоматериалы, трейлеры и записи, связанные с проектами MysticRealities.">
 
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="article.css">
 </head>
@@ -67,6 +68,11 @@
                         <video controls preload="metadata"><source src="media/video/2_5451934402101668690.mp4" type="video/mp4">Ваш браузер не поддерживает видео.</video>
                         <div class="video-caption">1 января 2025г</div>
                     </div>
+                    <div class="video-item">
+                        <div class="video-caption" style="font-size:14px;font-weight:bold;color:var(--text);padding:12px 15px;border-bottom:1px solid var(--border);">Первая встреча Прототипа</div>
+                        <video controls preload="metadata"><source src="media/video/1122(1).mp4" type="video/mp4">Ваш браузер не поддерживает видео.</video>
+                        <div class="video-caption">25 января 2025г</div>
+                    </div>
                 </div>
             </section>
 
@@ -107,7 +113,8 @@
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightboxImg");
 document.querySelectorAll(".gallery img").forEach(img => {
-    img.addEventListener("click", () => {
+    img.addEventListener("click", (event) => {
+        if (img.closest("a[download]")) return;
         lightboxImg.src = img.src;
         lightboxImg.alt = img.alt;
         lightbox.classList.add("open");
