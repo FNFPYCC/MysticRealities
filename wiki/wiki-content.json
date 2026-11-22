@@ -179,7 +179,8 @@
           "t": "p",
           "text": "Главной слабостью является временной осколок, который спрятан глубоко в теле. Если моментально уничтожить осколок, то энергия не успеет спасти носителя и прототип перестанет быть активным."
         }
-      ]
+      ],
+      "video_items": []
     },
     {
       "slug": "video",
@@ -208,8 +209,48 @@
           "title": "Театр Нарратора",
           "src": "media/video/2_5194936508435422061_2.mp4",
           "date": "20 ноября 2024г"
+        },
+        {
+          "title": "Новогодний выпуск",
+          "src": "media/video/2_5451934402101668690.mp4",
+          "date": "1 января 2025г"
         }
       ]
+    },
+    {
+      "slug": "skin",
+      "title": "Скины",
+      "short": "",
+      "category": "archive",
+      "subtitle": "",
+      "summary": "",
+      "published": true,
+      "card": true,
+      "card_symbol": "▤",
+      "card_image": "",
+      "comments": true,
+      "custom": false,
+      "infobox_title": "КАРТОЧКА",
+      "infobox_image": "",
+      "infobox": [],
+      "blocks": [
+        {
+          "t": "p",
+          "text": "Чтобы скачать скин нужно нажать на фото этого персонажа"
+        },
+        {
+          "t": "gallery",
+          "title": "",
+          "items": [
+            [
+              "media/TL_NEW (3).png",
+              "_TL_",
+              "media/TL_NEW.png"
+            ]
+          ]
+        }
+      ],
+      "video_items": []
     }
   ]
 }

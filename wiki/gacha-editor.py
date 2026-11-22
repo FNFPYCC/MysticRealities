@@ -76,7 +76,18 @@ def blocks_to_text(blocks):
             out.append("\n".join(f"{n}. {i}" for n, i in enumerate(b["items"], 1)))
         elif t in ("gallery", "video"):
             title = " " + b["title"] if b.get("title") else ""
-            out.append(f"[[{t}{title}: " + " ; ".join(a if not c else f"{a} | {c}" for a, c in b["items"]) + "]]")
+            parts = []
+            for item in b["items"]:
+                src = item[0]
+                cap = item[1] if len(item) > 1 else ""
+                download = item[2] if len(item) > 2 else ""
+                part = src
+                if cap or download:
+                    part += " | " + cap
+                if download:
+                    part += " | " + download
+                parts.append(part)
+            out.append(f"[[{t}{title}: " + " ; ".join(parts) + "]]")
     return "\n\n".join(out)
 
 
@@ -117,8 +128,11 @@ def text_to_blocks(text):
             items = []
             for part in m.group(3).split(";"):
                 if part.strip():
-                    src, _, cap = part.partition("|")
-                    items.append([src.strip(), cap.strip()])
+                    fields = [x.strip() for x in part.split("|")]
+                    src = fields[0]
+                    cap = fields[1] if len(fields) > 1 else ""
+                    download = fields[2] if len(fields) > 2 else ""
+                    items.append([src, cap, download] if m.group(1) == "gallery" else [src, cap])
             blocks.append({"t": m.group(1), "title": (m.group(2) or "").strip(), "items": items})
         else:
             if lst:
@@ -152,10 +166,18 @@ def block_html(b):
         lis = "\n".join(f"                <li>{inline(i)}</li>" for i in b["items"])
         return f"            <{t}>\n{lis}\n            </{t}>"
     if t == "gallery":
-        figs = "\n".join(
-            f'                    <figure>\n                        <img src="{esc(src)}" alt="{esc(cap)}" loading="lazy">\n'
-            + (f"                        <figcaption>{inline(cap)}</figcaption>\n" if cap else "") + "                    </figure>"
-            for src, cap in b["items"])
+        figures = []
+        for item in b["items"]:
+            src = item[0]
+            cap = item[1] if len(item) > 1 else ""
+            download = item[2] if len(item) > 2 else ""
+            image = f'<img src="{esc(src)}" alt="{esc(cap)}" loading="lazy">'
+            if download:
+                image = f'<a class="image-download" href="{esc(download)}" download>{image}</a>'
+            figures.append(f'                    <figure>\n                        {image}\n'
+                           + (f"                        <figcaption>{inline(cap)}</figcaption>\n" if cap else "")
+                           + "                    </figure>")
+        figs = "\n".join(figures)
         return (f'            <section class="media-section">\n                <h2>{esc(b.get("title") or "Фотогалерея")}</h2>\n'
                 f'                <div class="gallery">\n{figs}\n                </div>\n            </section>')
     if t == "video":
@@ -236,6 +258,7 @@ def page_html(a, cat, st):
     <title>{esc(a["title"])} — MysticRealities Wiki</title>
     <meta name="description" content="{desc}">
 
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="article.css">
 </head>
@@ -295,7 +318,8 @@ def page_html(a, cat, st):
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightboxImg");
 document.querySelectorAll(".gallery img").forEach(img => {{
-    img.addEventListener("click", () => {{
+    img.addEventListener("click", (event) => {{
+        if (img.closest("a[download]")) return;
         lightboxImg.src = img.src;
         lightboxImg.alt = img.alt;
         lightbox.classList.add("open");
@@ -547,7 +571,13 @@ def body_blocks(body):
             title = plain(h[0]) if h else ""
             figs, vids = find(n, "figure"), find(n, cls="video-item")
             if figs:
-                items = [[(find(f, "img") or [Node("", {}, None)])[0].attrs.get("src", ""), plain(c[0]) if (c := find(f, "figcaption")) else ""] for f in figs]
+                items = []
+                for fig in figs:
+                    image = (find(fig, "img") or [Node("", {}, None)])[0]
+                    anchors = find(fig, "a")
+                    download = anchors[0].attrs.get("href", "") if anchors and "download" in anchors[0].attrs else ""
+                    caption = plain(c[0]) if (c := find(fig, "figcaption")) else ""
+                    items.append([image.attrs.get("src", ""), caption, download])
                 blocks.append({"t": "gallery", "title": title if title != "Фотогалерея" else "", "items": items})
             if vids:
                 items = []
@@ -848,10 +878,26 @@ class ArticleExtra:
             self.wrap("[", f"]({url})")
 
     def add_photo(self):
-        var = tk.StringVar()
-        pick_image(var)
-        if var.get():
-            self.body.insert("insert", f"\n\n[[gallery: {var.get()} | подпись]]\n\n")
+        preview = tk.StringVar()
+        pick_image(preview)
+        if not preview.get():
+            return
+        caption = simpledialog.askstring("Подпись", "Подпись под изображением (можно оставить пустой):",
+                                         parent=self.body.winfo_toplevel()) or ""
+        download = ""
+        if messagebox.askyesno("Изображение для скачивания",
+                               "При нажатии на превью посетитель должен скачивать ДРУГОЕ изображение?",
+                               parent=self.body.winfo_toplevel()):
+            download_var = tk.StringVar()
+            pick_image(download_var)
+            download = download_var.get()
+            if not download:
+                return
+        line = f"[[gallery: {preview.get()} | {caption}"
+        if download:
+            line += f" | {download}"
+        line += "]]"
+        self.body.insert("insert", f"\n\n{line}\n\n")
 
     def add_video(self):
         url = simpledialog.askstring("Видео", "Ссылка на YouTube или файл .mp4:")
