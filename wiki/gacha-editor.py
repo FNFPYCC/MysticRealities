@@ -433,6 +433,21 @@ def region(text, name, inner, fallback):
     return new
 
 
+def update_index_lists(model):
+    """Синхронизирует меню и списки index.html, не пересоздавая другие статьи."""
+    text, nl = read_text(INDEX_FILE)
+    if not os.path.exists(INDEX_FILE + ".orig"):
+        shutil.copyfile(INDEX_FILE, INDEX_FILE + ".orig")
+    for name, (fn, fallback) in REGIONS.items():
+        text = region(text, name, fn(model), fallback)
+    text = re.sub(
+        r'(<span class="section-number">)01 / \\d+(</span>)',
+        lambda m: f"{m.group(1)}01 / {len(model['categories']):02d}{m.group(2)}",
+        text
+    )
+    write_text(INDEX_FILE, text, nl)
+
+
 def build_one_article(model, article):
     """Обновляет только HTML-файл одной выбранной статьи. index.html и другие статьи не трогает."""
     cats = {c["id"]: c for c in model["categories"]}
@@ -1153,14 +1168,18 @@ class App(tk.Tk):
         article = self.model["articles"][articles_tab.cur]
         try:
             path = build_one_article(self.model, article)
+            # Автоматически добавляем/обновляем ссылку на статью в меню,
+            # карточках категорий и общем списке на главной Wiki.
+            update_index_lists(self.model)
         except Exception as e:
             messagebox.showerror("Не удалось обновить статью", str(e))
             return
         messagebox.showinfo(
             "Статья обновлена",
             f"Обновлён только файл: articles/{article['slug']}.html\\n"
-            "Главная страница и остальные статьи не изменялись.\\n\\n"
-            "Обнови страницу статьи в браузере (Ctrl+F5)."
+            "Ссылки на неё также автоматически обновлены на главной странице Wiki.\\n"
+            "Остальные статьи не изменялись.\\n\\n"
+            "Обнови страницу в браузере (Ctrl+F5)."
         )
 
     def build(self):
