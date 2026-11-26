@@ -4,47 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MysticGuessr | MysticRealities</title>
-    <meta name="description" content="MysticGuessr — угадай координаты в 360° панораме мира MysticRealities.">
+    <meta name="description" content="Исследуй мир MysticRealities в 360° и угадывай места на карте.">
     <link rel="stylesheet" href="game.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-
 <header class="topbar">
-    <a href="../../index.html" class="logo">
-        MYSTIC<span>GUESSR</span>
-    </a>
-
+    <a href="../../index.html" class="logo">MYSTIC<span>GUESSR</span><small>MYSTICREALITIES</small></a>
     <div class="top-chips">
         <div class="chip" id="roundInfo">Раунд 1 / 15</div>
         <div class="chip chip-accent" id="scoreInfo">Очки: 0</div>
+        <button id="fullscreenButton" class="icon-btn" title="На весь экран" aria-label="На весь экран">⛶</button>
     </div>
 </header>
 
 <main class="game-layout">
     <section class="view-section">
-        <div id="panorama">
-            <div id="loading" class="chip">Загрузка панорамы...</div>
-        </div>
-        <div class="view-help">Тяни мышью — осматриваться • колёсико — приближение</div>
+        <div id="panorama"><div id="loading" class="chip">Ожидание игры...</div></div>
+        <div class="view-help">Перетаскивай мышью — осматривайся • колёсико — приближение</div>
         <div class="timer" id="timer">03:00</div>
     </section>
 </main>
 
-<!-- Стартовый экран -->
+<!-- Главное меню -->
 <div class="overlay" id="startScreen">
-    <div class="card">
-        <div class="card-tag">MYSTICREALITIES PROJECT</div>
-        <h1>Mystic<em>Guessr</em></h1>
-        <p>Осмотрись вокруг в 360° и поставь метку на карте там, где, по-твоему, ты находишься. Чем ближе метка — тем больше очков.</p>
-
-        <div class="card-stats">
-            <div><b id="roundsCount">15</b><span>раундов</span></div>
-            <div><b>3:00</b><span>на раунд</span></div>
-            <div><b>5000</b><span>макс. за раунд</span></div>
+    <div class="menu-card">
+        <div class="menu-topline">
+            <div class="card-tag">MYSTICREALITIES • EXPLORATION GAME</div>
+            <div class="version-tag">BETA</div>
         </div>
+        <h1>Mystic<em>Guessr</em></h1>
+        <p class="menu-description">Путешествуй по знакомым и неизведанным уголкам мира MysticRealities. Осматривайся в 360°, находи место на карте и получай очки за точность.</p>
 
-        <button id="startButton" class="primary big">Начать игру</button>
+        <section class="menu-section">
+            <div class="section-heading"><span>01</span><div><h2>Выбери сезон</h2><p>Каждый сезон — отдельный набор локаций</p></div></div>
+            <!-- Карточки сезонов генерируются в game.js из SEASON_DATA -->
+            <div class="season-grid" id="seasonGrid"></div>
+            <div class="season-status" id="seasonStatus">Загрузка сезонов...</div>
+        </section>
+
+        <section class="menu-section">
+            <div class="section-heading"><span>02</span><div><h2>Настройки игры</h2><p>Настрой длительность своего путешествия</p></div></div>
+            <div class="settings-grid">
+                <label class="setting-card">Количество раундов
+                    <select id="roundsSelect">
+                        <option value="5">5 раундов</option>
+                        <option value="10">10 раундов</option>
+                        <option value="15" selected>15 раундов</option>
+                    </select>
+                </label>
+                <label class="setting-card">Время на раунд
+                    <select id="timeSelect">
+                        <option value="180" selected>3 минуты</option>
+                        <option value="300">5 минут</option>
+                    </select>
+                </label>
+            </div>
+        </section>
+
+        <section class="menu-section check-section">
+            <div class="section-heading"><span>03</span><div><h2>Проверка файлов</h2><p>Автопроверка карты и панорам</p></div></div>
+            <div class="check-row">
+                <div class="check-icon">✓</div>
+                <div class="check-copy"><b>Проверка текстур</b><small>Карта и шесть сторон каждой 360° панорамы</small></div>
+                <button id="textureCheckButton" class="secondary-button">Проверить</button>
+            </div>
+            <div class="texture-report" id="textureReport">Автопроверка ещё не запускалась.</div>
+        </section>
+
+        <div class="menu-bottom">
+            <div class="how-to"><b>Как играть?</b><span>Осмотрись → найди место на карте → поставь метку → подтверди ответ.</span></div>
+            <div class="play-area">
+                <div id="menuHint">Проверяю файлы...</div>
+                <button id="startButton" class="play-button" disabled>▶ ИГРАТЬ</button>
+            </div>
+        </div>
+        <div class="menu-footer"><span>MYSTICREALITIES</span><span id="roundsCount">15</span> возможных раундов</div>
     </div>
 </div>
 
@@ -54,7 +89,6 @@
         <div class="map-title">Карта мира <small>1 пиксель = 1 блок</small></div>
         <button id="expandMapButton" class="icon-btn" title="Развернуть карту" aria-label="Развернуть карту">⛶</button>
     </div>
-
     <div class="map-canvas-wrapper">
         <canvas id="worldMap" width="2208" height="2208"></canvas>
         <div class="zoom-controls">
@@ -63,10 +97,8 @@
             <button id="resetMapButton" class="icon-btn" title="Сбросить вид" aria-label="Сбросить вид">⌂</button>
         </div>
     </div>
-
     <div class="map-help">Колёсико — масштаб • перетаскивание — двигать • клик — поставить метку</div>
     <div class="coordinates" id="coordinates">Метка не установлена</div>
-
     <button id="guessButton" class="primary" disabled>Подтвердить место</button>
     <div id="result"></div>
     <button id="nextButton" class="primary" hidden>Следующий раунд</button>
