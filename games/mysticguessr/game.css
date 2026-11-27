@@ -63,10 +63,7 @@ button:disabled{cursor:not-allowed;opacity:.42;transform:none}
     transition:opacity .25s, transform .4s;
 }
 .season-card:hover .season-preview{opacity:.8;transform:scale(1.05)}
-.season-card .season-preview::after{
-    content:"";position:absolute;inset:0;
-    background:linear-gradient(180deg,#0a0607aa 0%,#0a0607cc 55%,#0a0607ee 100%);
-}
+
 .season-card.no-photo .season-preview{
     background:radial-gradient(circle at 70% 20%,#a3132444,transparent 60%),linear-gradient(140deg,#1b0c10,#0a0607);
 }
