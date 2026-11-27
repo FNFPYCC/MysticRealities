@@ -37,10 +37,10 @@ if (!ctx) throw new Error("MysticGuessr: нет Canvas-контекста кар
 const SEASON_DATA = {
     1: {
         title: "MysticRealities 2",
-        preview: "../../assets/seasons/season1.jpg",
+        preview: "../../assets/seasons/2_1.png",
         map: "../../assets/maps/season1/map.png",
         worldSize: 2208,
-        offsetX: 0,   // У первого сезона сдвига нет
+        offsetX: 0,
         offsetZ: 0,
         available: true,
         locations: [
@@ -63,12 +63,9 @@ const SEASON_DATA = {
     },
     2: {
         title: "MysticRealities 3",
-        preview: "../../assets/seasons/season2.jpg",
+        preview: "../../assets/seasons/3_1.png",
         map: "../../assets/maps/season2/map.png",
         worldSize: 6032,
-        // ★ СДВИГ ДЛЯ 2 СЕЗОНА (чтобы центр карты был 0,0) ★
-        // Если в игре центр показывает 100, 150, значит нужно вычесть эти числа.
-        // Формула: (loc.x - offsetX). Если offsetX = 100, то 100 - 100 = 0.
         offsetX: 8, 
         offsetZ: 8,
         available: false,
