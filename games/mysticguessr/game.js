@@ -3,7 +3,6 @@
 // Сезоны, главы, 360° панорамы и метки
 // ==========================================
 
-// ---------- ЭЛЕМЕНТЫ ----------
 const mapCanvas = document.getElementById("worldMap");
 const mapWidget = document.getElementById("mapWidget");
 const expandMapButton = document.getElementById("expandMapButton");
@@ -33,17 +32,16 @@ const ctx = mapCanvas.getContext("2d");
 if (!ctx) throw new Error("MysticGuessr: нет Canvas-контекста карты.");
 
 // ==========================================
-// ★★★ КОНФИГ СЕЗОНОВ — ВСЁ ЗДЕСЬ ★★★
-// Добавить новый сезон = добавить один блок ниже.
-// preview — путь к фото-обложке карточки (может быть null).
-// available — false, если сезон ещё в разработке.
+// ★★★ КОНФИГ СЕЗОНОВ ★★★
 // ==========================================
 const SEASON_DATA = {
     1: {
         title: "MysticRealities 2",
-        subtitle: "Доступен • 15 глав",
-        preview: "../../assets/seasons/season1.jpg",   // <- фото на кнопке
+        preview: "../../assets/seasons/season1.jpg",
         map: "../../assets/maps/season1/map.png",
+        worldSize: 2208,
+        offsetX: 0,   // У первого сезона сдвига нет
+        offsetZ: 0,
         available: true,
         locations: [
             { name: "Season 1 — Cap 1",  folder: "season1/cap1",  x: -232, z: 684 },
@@ -65,26 +63,52 @@ const SEASON_DATA = {
     },
     2: {
         title: "MysticRealities 3",
-        subtitle: "Скоро",
         preview: "../../assets/seasons/season2.jpg",
         map: "../../assets/maps/season2/map.png",
+        worldSize: 6032,
+        // ★ СДВИГ ДЛЯ 2 СЕЗОНА (чтобы центр карты был 0,0) ★
+        // Если в игре центр показывает 100, 150, значит нужно вычесть эти числа.
+        // Формула: (loc.x - offsetX). Если offsetX = 100, то 100 - 100 = 0.
+        offsetX: 8, 
+        offsetZ: 8,
         available: false,
-        locations: []
+        locations: [
+            { name: "Season 2 — Cap 1",  folder: "season2/cap1",  x: -741, z: -2991 },
+            { name: "Season 2 — Cap 2",  folder: "season2/cap2",  x: -1063, z: -2705 },
+            { name: "Season 2 — Cap 3",  folder: "season2/cap3",  x: 88, z: -1030 },
+            { name: "Season 2 — Cap 4",  folder: "season2/cap4",  x: 195, z: -458 },
+            { name: "Season 2 — Cap 5",  folder: "season2/cap5",  x: 262, z: -444 },
+            { name: "Season 2 — Cap 6",  folder: "season2/cap6",  x: 1500, z: -582 },
+            { name: "Season 2 — Cap 7",  folder: "season2/cap7",  x: 2891, z: -1821 },
+            { name: "Season 2 — Cap 8",  folder: "season2/cap8",  x: 1795, z: 1342 },
+            { name: "Season 2 — Cap 9",  folder: "season2/cap9",  x: 1834, z: 1488 },
+            { name: "Season 2 — Cap 10", folder: "season2/cap10",  x: -517, z: 600 },
+            { name: "Season 2 — Cap 11", folder: "season2/cap11",  x: -416, z: 265 },
+            { name: "Season 2 — Cap 12", folder: "season2/cap12",  x: -234, z: 339 },
+            { name: "Season 2 — Cap 13", folder: "season2/cap13",  x: 1, z: -1776 },
+            { name: "Season 2 — Cap 14", folder: "season2/cap14",  x: -434, z: 912 },
+            { name: "Season 2 — Cap 15", folder: "season2/cap15",  x: 0, z: 3 },
+            { name: "Season 2 — Cap 16", folder: "season2/cap16",  x: -223, z: 112 },
+            { name: "Season 2 — Cap 17", folder: "season2/cap17",  x: -604, z: -27 },
+            { name: "Season 2 — Cap 18", folder: "season2/cap18",  x: -1167, z: -1770 },
+            { name: "Season 2 — Cap 19", folder: "season2/cap19",  x: 670, z: -164 },
+            { name: "Season 2 — Cap 20", folder: "season2/cap20",  x: 493, z: -279 }
+        ]
     }
 };
 
 // ---------- НАСТРОЙКИ ----------
-const WORLD_SIZE = 2208;
-const MAX_ROUNDS = 15;
+let WORLD_SIZE = 2208;
+let MAX_ROUNDS = 15;
 let ROUND_TIME = 180;
 let ROUNDS = 0;
 let LOCATIONS = [];
 let selectedSeason = 1;
 let textureCheckPassed = false;
 
-const MAP_SIZE = WORLD_SIZE;
-const MAX_DISTANCE = WORLD_SIZE * Math.SQRT2;
-const MAP_MAX_ZOOM = 32;
+let MAP_SIZE = WORLD_SIZE;
+let MAX_DISTANCE = WORLD_SIZE * Math.SQRT2;
+const MAP_MAX_ZOOM = 100;
 let MAP_IMAGE_SRC = SEASON_DATA[1].map;
 
 // ---------- КАРТА ----------
@@ -129,7 +153,7 @@ function renderSeasonGrid() {
             <span class="season-preview"${data.preview ? ` style="background-image:url('${data.preview}')"` : ""}></span>
             <span class="season-number">${String(n).padStart(2, "0")}</span>
             <b>${data.title}</b>
-            <small>${data.subtitle}</small>
+            <small>${data.subtitle || (data.available ? "Доступен" : "Скоро")}</small>
         `;
 
         btn.addEventListener("click", () => {
@@ -150,6 +174,17 @@ function setSeason(seasonNumber) {
     selectedSeason = seasonNumber;
     LOCATIONS = data.locations;
     MAP_IMAGE_SRC = data.map;
+    
+    WORLD_SIZE = data.worldSize || 2208;
+    MAP_SIZE = WORLD_SIZE;
+    MAX_DISTANCE = WORLD_SIZE * Math.SQRT2;
+    MAX_ROUNDS = LOCATIONS.length;
+    
+    mapCanvas.width = MAP_SIZE;
+    mapCanvas.height = MAP_SIZE;
+    
+    updateRoundsDropdown(MAX_ROUNDS);
+
     ROUNDS = Math.min(Number(roundsSelect?.value || MAX_ROUNDS), LOCATIONS.length);
     textureCheckPassed = false;
     mapImage.src = MAP_IMAGE_SRC;
@@ -167,8 +202,28 @@ function setSeason(seasonNumber) {
     menuHint.textContent = "Проверяю файлы...";
     roundsCountEl.textContent = ROUNDS;
 
-    // ★ Автопроверка при выборе сезона
     checkSeasonTextures();
+}
+
+function updateRoundsDropdown(max) {
+    if (!roundsSelect) return;
+    const currentVal = Number(roundsSelect.value);
+    roundsSelect.innerHTML = "";
+    
+    const options = [5, 10, 15, 20, 25, 30].filter(v => v <= max);
+    if (options.length === 0 || options[options.length - 1] < max) {
+        options.push(max);
+    }
+
+    options.forEach(val => {
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = `${val} раундов`;
+        if (val === (options.includes(currentVal) ? currentVal : options[options.length - 1])) {
+            opt.selected = true;
+        }
+        roundsSelect.appendChild(opt);
+    });
 }
 
 // ==========================================
@@ -203,7 +258,7 @@ async function checkSeasonTextures() {
     });
 
     const results = await Promise.all(files.map(checkImage));
-    if (myToken !== checkToken) return false; // устарело — другой вызов
+    if (myToken !== checkToken) return false;
 
     const missing = results.filter(r => !r.ok);
     textureCheckPassed = missing.length === 0;
@@ -297,8 +352,27 @@ function generateMap() {
     }
 }
 
-function worldToMap(loc){ return { x: loc.x + WORLD_SIZE/2 + 0.5, y: loc.z + WORLD_SIZE/2 + 0.5 }; }
-function mapToWorld(x,y){ return { x: Math.floor(x*WORLD_SIZE/mapCanvas.width) - WORLD_SIZE/2, z: Math.floor(y*WORLD_SIZE/mapCanvas.height) - WORLD_SIZE/2 }; }
+// ★★★ ФУНКЦИИ С УЧЕТОМ OFFSET ★★★
+function worldToMap(loc){ 
+    const season = SEASON_DATA[selectedSeason];
+    const offX = season.offsetX || 0;
+    const offZ = season.offsetZ || 0;
+    return { 
+        x: (loc.x - offX) + WORLD_SIZE/2 + 0.5, 
+        y: (loc.z - offZ) + WORLD_SIZE/2 + 0.5 
+    }; 
+}
+
+function mapToWorld(x,y){ 
+    const season = SEASON_DATA[selectedSeason];
+    const offX = season.offsetX || 0;
+    const offZ = season.offsetZ || 0;
+    return { 
+        x: Math.floor(x*WORLD_SIZE/mapCanvas.width) - WORLD_SIZE/2 + offX, 
+        z: Math.floor(y*WORLD_SIZE/mapCanvas.height) - WORLD_SIZE/2 + offZ 
+    }; 
+}
+
 function formatCoords(p){ return `X: ${p.x}, Z: ${p.z}`; }
 
 function clampMapOffset(){
@@ -568,7 +642,7 @@ roundsSelect?.addEventListener("change", ()=>{
     textureCheckPassed = false;
     startButton.disabled = true;
     textureReport.textContent = "Настройки изменены. Запускаю автопроверку...";
-    checkSeasonTextures(); // ★ авто
+    checkSeasonTextures();
 });
 timeSelect?.addEventListener("change", ()=>{
     ROUND_TIME = Number(timeSelect.value);
@@ -675,10 +749,7 @@ function createPanorama(){
 mapCanvas.width = MAP_SIZE;
 mapCanvas.height = MAP_SIZE;
 
-// ★ Сначала рисуем кнопки сезонов из конфига
 renderSeasonGrid();
-
-// ★ Затем выбираем сезон 1 — это автоматически запустит автопроверку
 setSeason(1);
 
 mapCanvas.style.imageRendering = "auto";
