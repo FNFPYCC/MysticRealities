@@ -68,7 +68,7 @@ const SEASON_DATA = {
         worldSize: 6032,
         offsetX: 8, 
         offsetZ: 8,
-        available: false,
+        available: true,
         locations: [
             { name: "Season 2 — Cap 1",  folder: "season2/cap1",  x: -741, z: -2991 },
             { name: "Season 2 — Cap 2",  folder: "season2/cap2",  x: -1063, z: -2705 },
