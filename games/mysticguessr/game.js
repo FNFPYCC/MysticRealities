@@ -36,6 +36,18 @@ if (!ctx) throw new Error("MysticGuessr: нет Canvas-контекста кар
 // ==========================================
 const SEASON_DATA = {
     1: {
+        title: "MysticRealities",
+        preview: "../../assets/seasons/1_1.png",
+        map: "../../assets/maps/season1/map.png",
+        worldSize: 2208,
+        offsetX: 0,
+        offsetZ: 0,
+        available: false,
+        locations: [
+            { name: "Season 1 — Cap 15", folder: "season1/cap15", x: -609, z: -511 }
+        ]
+    },
+    2: {
         title: "MysticRealities 2",
         preview: "../../assets/seasons/2_1.png",
         map: "../../assets/maps/season1/map.png",
@@ -61,7 +73,7 @@ const SEASON_DATA = {
             { name: "Season 1 — Cap 15", folder: "season1/cap15", x: -609, z: -511 }
         ]
     },
-    2: {
+    3: {
         title: "MysticRealities 3",
         preview: "../../assets/seasons/3_1.png",
         map: "../../assets/maps/season2/map.png",
@@ -90,6 +102,54 @@ const SEASON_DATA = {
             { name: "Season 2 — Cap 18", folder: "season2/cap18",  x: -1167, z: -1770 },
             { name: "Season 2 — Cap 19", folder: "season2/cap19",  x: 670, z: -164 },
             { name: "Season 2 — Cap 20", folder: "season2/cap20",  x: 493, z: -279 }
+        ]
+    },
+    4: {
+        title: "MysticRealities 4",
+        preview: "../../assets/seasons/4_1.png",
+        map: "../../assets/maps/season1/map.png",
+        worldSize: 2208,
+        offsetX: 0,
+        offsetZ: 0,
+        available: false,
+        locations: [
+            { name: "Season 1 — Cap 15", folder: "season1/cap15", x: -609, z: -511 }
+        ]
+    },
+    5: {
+        title: "MysticRealities все сезоны",
+        preview: "../../assets/seasons/5_1.png",
+        map: "../../assets/maps/season1/map.png",
+        worldSize: 2208,
+        offsetX: 0,
+        offsetZ: 0,
+        available: false,
+        locations: [
+            { name: "Season 1 — Cap 15", folder: "season1/cap15", x: -609, z: -511 }
+        ]
+    },
+    6: {
+        title: "Nullcode",
+        preview: "../../assets/seasons/6_1.png",
+        map: "../../assets/maps/season1/map.png",
+        worldSize: 2208,
+        offsetX: 0,
+        offsetZ: 0,
+        available: false,
+        locations: [
+            { name: "Season 1 — Cap 15", folder: "season1/cap15", x: -609, z: -511 }
+        ]
+    },
+    7: {
+        title: "MysticRealities rework AKT1",
+        preview: "../../assets/seasons/7_1.png",
+        map: "../../assets/maps/season1/map.png",
+        worldSize: 2208,
+        offsetX: 0,
+        offsetZ: 0,
+        available: false,
+        locations: [
+            { name: "Season 1 — Cap 15", folder: "season1/cap15", x: -609, z: -511 }
         ]
     }
 };
